@@ -1,16 +1,16 @@
 import { Navigate, Route, Routes } from "react-router-dom"
-import Dashboard from "./layouts/Dashboard"
-import NavBar from "./layouts/NavBar"
-import ViewFoods from "./layouts/ViewFoods"
+import MealPlan from "./layouts/MealPlan"
+import NavBar from "./layouts/re-useable/NavBar"
+import ViewFoods from "./layouts/view-foods/ViewFoods"
 import ViewMeals from "./layouts/ViewMeals"
 
 function App() {
 	return (
 		<div>
-			<NavBar />
+			<NavBar loggedIn={true} />
 			<Routes>
-				<Route path="/" element={<Navigate replace to="/home" />} />
-				<Route path="/home" element={<Dashboard />} />
+				<Route path="/" element={<Navigate replace to="/mymealplan" />} />
+				<Route path="/mymealplan" element={<MealPlan />} />
 				<Route path="/foods" element={<ViewFoods />} />
 				<Route path="/meals" element={<ViewMeals />} />
 			</Routes>

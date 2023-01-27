@@ -1,22 +1,13 @@
 @import "bootstrap/scss/functions";
 
-$eton-blue: #a1cca5ff;
+$dark-sea-green: #8fb996;
 $middle-red: #d7816aff;
 $russian-green: #709775ff;
 $wine: #732c2cff;
 $dark-jungle-green: #111d13ff;
 
-$primary: $eton-blue;
+$primary: $dark-sea-green;
 $danger: $middle-red;
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	text-transform: uppercase;
-}
 
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/maps";
