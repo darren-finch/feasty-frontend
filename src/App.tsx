@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from "react-router-dom"
-import "./App.css"
 import Dashboard from "./layouts/Dashboard"
 import NavBar from "./layouts/NavBar"
 import ViewFoods from "./layouts/ViewFoods"
