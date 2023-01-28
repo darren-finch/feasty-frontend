@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { Accordion, Button, Col, Form, Row } from "react-bootstrap"
 import { Food } from "../../models/Food"
 import FoodCard from "../view-foods/components/FoodCard"
 
@@ -52,29 +53,31 @@ const SearchableFoodsList: React.FC = () => {
 
 	return (
 		<div>
-			<div className="row">
-				<div className="col-12 col-lg-8 d-flex align-items-center">
-					<p className="h5">Search</p>
-				</div>
-				<div className="col col-lg-4 gap-4 d-flex align-items-center">
-					<input
-						style={{ minWidth: "150px" }}
-						className="flex-shrink-1 form-control"
-						type="text"
-						name="searchTextInput"
-						id="searchTextInput"
-						placeholder="Enter food name..."
-					/>
-					<button className="btn btn-outline-success">
-						<i className="bi bi-search"></i>
-					</button>
-				</div>
-			</div>
-			<div className="accordion accordion-flush" id="foodsAccordion">
+			<Form>
+				<Row>
+					<Col className="col-12 col-lg-8 d-flex align-items-center">
+						<p className="h5">Search</p>
+					</Col>
+					<Col className="col col-lg-4 gap-4 d-flex align-items-center">
+						<Form.Control
+							style={{ minWidth: "150px" }}
+							className="flex-shrink-1"
+							type="text"
+							name="searchTextInput"
+							id="searchTextInput"
+							placeholder="Enter food name..."
+						/>
+						<Button variant="outline-primary">
+							<i className="bi bi-search"></i>
+						</Button>
+					</Col>
+				</Row>
+			</Form>
+			<Accordion>
 				{foods.map((food) => {
 					return <FoodCard key={food.id} food={food} />
 				})}
-			</div>
+			</Accordion>
 		</div>
 	)
 }

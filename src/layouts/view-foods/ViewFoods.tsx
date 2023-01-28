@@ -1,21 +1,22 @@
 import React from "react"
+import { Button, Col, Container, Row } from "react-bootstrap"
 import SearchableFoodsList from "../re-useable/SearchableFoodsList"
 
 const ViewFoods: React.FC = () => {
 	return (
-		<div className="container">
-			<div className="row my-4">
-				<div className="col">
+		<Container>
+			<Row className="my-4">
+				<Col>
 					<h1>Foods</h1>
-				</div>
-				<div className="col d-flex align-items-center justify-content-end">
-					<div className="btn btn-primary">
+				</Col>
+				<Col className="d-flex align-items-center justify-content-end">
+					<Button>
 						<i className="bi bi-plus-lg"></i>
-					</div>
-				</div>
-			</div>
+					</Button>
+				</Col>
+			</Row>
 			<SearchableFoodsList />
-		</div>
+		</Container>
 	)
 }
 
