@@ -12,7 +12,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 	return (
 		<nav className="navbar navbar-expand-lg bg-light">
 			<div className="container">
-				<NavLink className="navbar-brand text-primary" to="/home">
+				<NavLink className="navbar-brand text-primary" to="/mealplan">
 					Feasty
 				</NavLink>
 				<div className="d-flex d-lg-none flex-grow-1 justify-content-end">

@@ -9,10 +9,10 @@ function App() {
 		<div>
 			<NavBar loggedIn={true} />
 			<Routes>
-				<Route path="/" element={<Navigate replace to="/mymealplan" />} />
-				<Route path="/mymealplan" element={<MealPlan />} />
-				<Route path="/foods" element={<ViewFoods />} />
+				<Route path="/" element={<Navigate replace to="/mealplan" />} />
+				<Route path="/mealplan" element={<MealPlan />} />
 				<Route path="/meals" element={<ViewMeals />} />
+				<Route path="/foods" element={<ViewFoods />} />
 			</Routes>
 		</div>
 	)
