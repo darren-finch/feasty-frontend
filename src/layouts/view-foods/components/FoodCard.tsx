@@ -7,10 +7,12 @@ import Card from "react-bootstrap/Card"
 
 interface FoodCardProps {
 	food: Food
+	onEditFoodClicked: (selectedFood: Food) => void
+	onDeleteFoodClicked: (selectedFoodId: string) => void
 }
 
 const FoodCard: React.FC<FoodCardProps> = (props) => {
-	const { food } = props
+	const { food, onEditFoodClicked, onDeleteFoodClicked } = props
 
 	const { activeEventKey } = useContext(AccordionContext)
 	const onAccordionButtonClicked = useAccordionButton(food.id, () => {})
@@ -22,10 +24,10 @@ const FoodCard: React.FC<FoodCardProps> = (props) => {
 			<Card.Header className="d-flex">
 				<div className="w-100 py-3 px-4 gap-4 d-flex align-items-center">
 					<p className="mb-0 flex-grow-1">{food.title}</p>
-					<Button variant="outline-primary">
+					<Button onClick={() => onEditFoodClicked(food)} variant="outline-primary">
 						<i className="bi bi-pencil-fill"></i>
 					</Button>
-					<Button variant="outline-primary">
+					<Button onClick={() => onDeleteFoodClicked(food.id)} variant="outline-primary">
 						<i className="bi bi-trash"></i>
 					</Button>
 					<Button onClick={onAccordionButtonClicked} variant="outline-primary">

@@ -3,7 +3,14 @@ import { Accordion, Button, Col, Form, Row } from "react-bootstrap"
 import { Food } from "../../models/Food"
 import FoodCard from "../view-foods/components/FoodCard"
 
-const SearchableFoodsList: React.FC = () => {
+interface SearchableFoodsListProps {
+	onEditFoodClicked: (selectedFood: Food) => void
+	onDeleteFoodClicked: (selectedFoodId: string) => void
+}
+
+const SearchableFoodsList: React.FC<SearchableFoodsListProps> = (props) => {
+	const { onEditFoodClicked, onDeleteFoodClicked } = props
+
 	const [foods, setFoods] = useState<Food[]>([])
 	const [isError, setIsError] = useState<Boolean>(false)
 
@@ -75,7 +82,14 @@ const SearchableFoodsList: React.FC = () => {
 			</Form>
 			<Accordion>
 				{foods.map((food) => {
-					return <FoodCard key={food.id} food={food} />
+					return (
+						<FoodCard
+							key={food.id}
+							food={food}
+							onEditFoodClicked={onEditFoodClicked}
+							onDeleteFoodClicked={onDeleteFoodClicked}
+						/>
+					)
 				})}
 			</Accordion>
 		</div>
