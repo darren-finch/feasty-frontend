@@ -1,5 +1,5 @@
 export class Food {
-	private _id: string
+	private _id: number
 
 	private _title: string
 
@@ -16,7 +16,7 @@ export class Food {
 	private _proteins: number
 
 	constructor(
-		id: string,
+		id: number,
 		title: string,
 		quantity: number,
 		unit: string,
@@ -35,7 +35,7 @@ export class Food {
 		this._proteins = proteins
 	}
 
-	public get id(): string {
+	public get id(): number {
 		return this._id
 	}
 

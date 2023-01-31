@@ -1,12 +1,72 @@
-import React, { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
-import { Food } from "../../models/Food"
-import EditFoodModal from "../modals/EditFoodModal"
+import { Food } from "../../data/food/Food"
+import { foodRepository } from "../../global/GlobalVariables"
+import EditFoodModal from "../modals/edit-food/EditFoodModal"
 import SearchableFoodsList from "../re-useable/SearchableFoodsList"
 
+/*
+Data for this screen:
+- initial foods list from db (not state)
+- whether we had an error when trying to load the initial foods list
+- foods list that the front-end modifies to match the database operations
+and filters based on the search text
+- search text
+- whether the edit food modal is visible
+- what the currently selected food is
+- all the form fields for the edit food modal
+- whether there was an error when trying to save a food
+*/
 const ViewFoods: React.FC = () => {
+	const [foodsList, setFoodsList] = useState<Food[]>([])
+	const [isFoodsListLoading, setIsFoodsListLoading] = useState(true)
+	const [getFoodsListError, setGetFoodsListError] = useState<string | null>(null)
+	const [searchQuery, setSearchQuery] = useState("")
 	const [showEditFoodModal, setShowEditFoodModal] = useState(false)
 	const [currentlySelectedFood, setSelectedFood] = useState<Food | null>(null)
+
+	const fetchFoods = async () => {
+		setIsFoodsListLoading(true)
+
+		try {
+			const response = await foodRepository.fetchFoodsByTitle(searchQuery)
+
+			if (response.error) {
+				throw response.error
+			} else {
+				setIsFoodsListLoading(false)
+				setFoodsList(response.value)
+			}
+		} catch (err: any) {
+			setIsFoodsListLoading(false)
+			setGetFoodsListError(err)
+		}
+	}
+
+	useEffect(() => {
+		fetchFoods()
+	}, [])
+
+	const handleSearchQueryChange = (newSearchQuery: string) => {
+		setSearchQuery(newSearchQuery)
+	}
+	const handleSearchClicked = () => {
+		fetchFoods()
+	}
+	const handleEditFoodClicked = (selectedFood: Food) => {
+		setSelectedFood(selectedFood)
+		setShowEditFoodModal(true)
+	}
+	const handleDeleteFoodClicked = async (selectedFoodId: number) => {
+		setIsFoodsListLoading(true)
+		await foodRepository.deleteFood(selectedFoodId)
+		fetchFoods()
+	}
+	const handleEditFoodModalClose = () => setShowEditFoodModal(false)
+	const handleEditFoodModalSuccessfulSave = () => {
+		fetchFoods()
+		setShowEditFoodModal(false)
+	}
 
 	return (
 		<Container>
@@ -25,11 +85,14 @@ const ViewFoods: React.FC = () => {
 				</Col>
 			</Row>
 			<SearchableFoodsList
-				onEditFoodClicked={(selectedFood) => {
-					setSelectedFood(selectedFood)
-					setShowEditFoodModal(true)
-				}}
-				onDeleteFoodClicked={(selectedFoodId) => console.log("Delete food #" + selectedFoodId)}
+				foodsList={foodsList}
+				searchQuery={searchQuery}
+				isLoading={isFoodsListLoading}
+				error={getFoodsListError}
+				onSearchQueryChange={handleSearchQueryChange}
+				onSearchClicked={handleSearchClicked}
+				onEditFoodClicked={handleEditFoodClicked}
+				onDeleteFoodClicked={handleDeleteFoodClicked}
 			/>
 			{/* We need the key prop below in order to re-mount the modal if the selected food changes.
 			Otherwise, the initial state of the modal will not change when we update the currently selected food, 
@@ -38,8 +101,8 @@ const ViewFoods: React.FC = () => {
 				key={currentlySelectedFood?.id}
 				food={currentlySelectedFood}
 				show={showEditFoodModal}
-				onClose={() => setShowEditFoodModal(false)}
-				onSave={() => setShowEditFoodModal(false)}
+				onClose={handleEditFoodModalClose}
+				onSuccessfulSave={handleEditFoodModalSuccessfulSave}
 			/>
 		</Container>
 	)

@@ -1,4 +1,4 @@
-import { Food } from "../../../models/Food"
+import { Food } from "../../../data/food/Food"
 import { useContext } from "react"
 import { AccordionContext, Button } from "react-bootstrap"
 import Accordion from "react-bootstrap/Accordion"
@@ -8,16 +8,15 @@ import Card from "react-bootstrap/Card"
 interface FoodCardProps {
 	food: Food
 	onEditFoodClicked: (selectedFood: Food) => void
-	onDeleteFoodClicked: (selectedFoodId: string) => void
+	onDeleteFoodClicked: (selectedFoodId: number) => void
 }
 
 const FoodCard: React.FC<FoodCardProps> = (props) => {
 	const { food, onEditFoodClicked, onDeleteFoodClicked } = props
-
 	const { activeEventKey } = useContext(AccordionContext)
-	const onAccordionButtonClicked = useAccordionButton(food.id, () => {})
+	const onAccordionButtonClicked = useAccordionButton(food.id.toString(), () => {})
 
-	const isCurrentlyOpen = activeEventKey === food.id
+	const isCurrentlyOpen = activeEventKey === food.id.toString()
 
 	return (
 		<Card className="my-4">
@@ -35,7 +34,7 @@ const FoodCard: React.FC<FoodCardProps> = (props) => {
 					</Button>
 				</div>
 			</Card.Header>
-			<Accordion.Collapse eventKey={food.id}>
+			<Accordion.Collapse eventKey={food.id.toString()}>
 				<Card.Body>{`${food.calories} calories - ${food.fats} fats - ${food.carbs} carbs - ${food.proteins} proteins`}</Card.Body>
 			</Accordion.Collapse>
 		</Card>

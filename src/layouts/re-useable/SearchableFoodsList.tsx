@@ -1,62 +1,34 @@
 import React, { useEffect, useState } from "react"
-import { Accordion, Button, Col, Form, Row } from "react-bootstrap"
-import { Food } from "../../models/Food"
+import { Accordion, Button, Col, Form, Row, Spinner } from "react-bootstrap"
+import { Food } from "../../data/food/Food"
 import FoodCard from "../view-foods/components/FoodCard"
+import ErrorDisplay from "./misc/ErrorDisplay"
+import NoResultsDisplay from "./misc/NoResultsDisplay"
 
 interface SearchableFoodsListProps {
+	foodsList: Food[]
+	searchQuery: string
+	isLoading: boolean
+	error: string | null
+	onSearchQueryChange: (newSearchQuery: string) => void
+	onSearchClicked: () => void
 	onEditFoodClicked: (selectedFood: Food) => void
-	onDeleteFoodClicked: (selectedFoodId: string) => void
+	onDeleteFoodClicked: (selectedFoodId: number) => void
 }
 
 const SearchableFoodsList: React.FC<SearchableFoodsListProps> = (props) => {
-	const { onEditFoodClicked, onDeleteFoodClicked } = props
+	const {
+		foodsList,
+		searchQuery,
+		error,
+		isLoading,
+		onSearchQueryChange,
+		onSearchClicked,
+		onEditFoodClicked,
+		onDeleteFoodClicked,
+	} = props
 
-	const [foods, setFoods] = useState<Food[]>([])
-	const [isError, setIsError] = useState<Boolean>(false)
-
-	useEffect(() => {
-		const foodsUrl = "http://localhost:8080/api/foods"
-
-		const fetchFoods = async () => {
-			try {
-				const response = await fetch(foodsUrl)
-
-				if (!response.ok) {
-					throw new Error("Something went wrong.")
-				}
-
-				const responseJson = await response.json()
-
-				const responseData = responseJson._embedded.foods
-
-				const loadedFoods: Food[] = []
-				for (const key in responseData) {
-					loadedFoods.push(
-						new Food(
-							key,
-							responseData[key].title,
-							responseData[key].quantity,
-							responseData[key].unit,
-							responseData[key].calories,
-							responseData[key].fats,
-							responseData[key].carbs,
-							responseData[key].proteins
-						)
-					)
-				}
-
-				setFoods(loadedFoods)
-			} catch (err: any) {
-				setIsError(true)
-			}
-		}
-
-		fetchFoods()
-	}, [])
-
-	if (isError) {
-		return <p>Whoops, we ran into an error.</p>
-	}
+	const isError = error != null && error != ""
 
 	return (
 		<div>
@@ -73,24 +45,38 @@ const SearchableFoodsList: React.FC<SearchableFoodsListProps> = (props) => {
 							name="searchTextInput"
 							id="searchTextInput"
 							placeholder="Enter food name..."
+							value={searchQuery}
+							onChange={(e) => onSearchQueryChange(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key == "Enter") {
+									e.preventDefault()
+									onSearchClicked()
+								}
+							}}
 						/>
-						<Button variant="outline-primary">
+						<Button variant="outline-primary" onClick={onSearchClicked}>
 							<i className="bi bi-search"></i>
 						</Button>
 					</Col>
 				</Row>
 			</Form>
 			<Accordion>
-				{foods.map((food) => {
-					return (
-						<FoodCard
-							key={food.id}
-							food={food}
-							onEditFoodClicked={onEditFoodClicked}
-							onDeleteFoodClicked={onDeleteFoodClicked}
-						/>
-					)
-				})}
+				{isLoading && <Spinner />}
+				{isError && <ErrorDisplay error={error} />}
+				{!isLoading && !isError && foodsList.length < 1 && <NoResultsDisplay />}
+				{!isLoading &&
+					!isError &&
+					foodsList.length > 0 &&
+					foodsList.map((food) => {
+						return (
+							<FoodCard
+								key={food.id}
+								food={food}
+								onEditFoodClicked={onEditFoodClicked}
+								onDeleteFoodClicked={onDeleteFoodClicked}
+							/>
+						)
+					})}
 			</Accordion>
 		</div>
 	)
