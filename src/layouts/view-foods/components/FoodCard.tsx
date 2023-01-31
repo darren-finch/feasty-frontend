@@ -18,24 +18,33 @@ const FoodCard: React.FC<FoodCardProps> = (props) => {
 
 	const isCurrentlyOpen = activeEventKey === food.id.toString()
 
+	const macroNutrientsString = `${food.calories} calories - ${food.fats} fats - ${food.carbs} carbs - ${food.proteins} proteins`
+
 	return (
 		<Card className="my-4">
 			<Card.Header className="d-flex">
-				<div className="w-100 py-3 px-4 gap-4 d-flex align-items-center">
-					<p className="mb-0 flex-grow-1">{food.title}</p>
+				<div className="w-100 py-3 px-4 gap-3 gap-lg-4 d-flex align-items-center">
+					<div className="flex-grow-1 d-lg-none">
+						<p className="mb-0">{`${food.title}`}</p>
+						<p className="mb-0">{`${food.quantity} ${food.unit}`}</p>
+					</div>
+					<div className="flex-grow-1 d-none d-lg-block">
+						<p className="h4 mb-0">{`${food.title} | ${food.quantity} ${food.unit}`}</p>
+						<p className="mb-0">{macroNutrientsString}</p>
+					</div>
 					<Button onClick={() => onEditFoodClicked(food)} variant="outline-primary">
 						<i className="bi bi-pencil-fill"></i>
 					</Button>
 					<Button onClick={() => onDeleteFoodClicked(food.id)} variant="outline-primary">
 						<i className="bi bi-trash"></i>
 					</Button>
-					<Button onClick={onAccordionButtonClicked} variant="outline-primary">
+					<Button className="d-lg-none" onClick={onAccordionButtonClicked} variant="outline-primary">
 						<i className={`bi bi-chevron-${isCurrentlyOpen ? "up" : "down"}`}></i>
 					</Button>
 				</div>
 			</Card.Header>
 			<Accordion.Collapse eventKey={food.id.toString()}>
-				<Card.Body>{`${food.calories} calories - ${food.fats} fats - ${food.carbs} carbs - ${food.proteins} proteins`}</Card.Body>
+				<Card.Body className="d-lg-none">{macroNutrientsString}</Card.Body>
 			</Accordion.Collapse>
 		</Card>
 	)

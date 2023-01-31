@@ -61,9 +61,17 @@ const SearchableFoodsList: React.FC<SearchableFoodsListProps> = (props) => {
 				</Row>
 			</Form>
 			<Accordion>
-				{isLoading && <Spinner />}
-				{isError && <ErrorDisplay error={error} />}
-				{!isLoading && !isError && foodsList.length < 1 && <NoResultsDisplay />}
+				{isLoading && <Spinner className="my-2" />}
+				{isError && (
+					<div className="my-2">
+						<ErrorDisplay error={error} />
+					</div>
+				)}
+				{!isLoading && !isError && foodsList.length < 1 && (
+					<div className="my-2">
+						<NoResultsDisplay />
+					</div>
+				)}
 				{!isLoading &&
 					!isError &&
 					foodsList.length > 0 &&
