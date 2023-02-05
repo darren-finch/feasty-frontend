@@ -2,17 +2,23 @@ import { RepositoryResponse } from "../RepositoryResponse"
 import { Food } from "./Food"
 
 export class FoodRepository {
-	private _baseFoodsUrlString = "http://localhost:8080/api/foods"
+	private _baseFoodsUrlString = process.env.REACT_APP_API_SERVER_URL + "/api/foods"
 
-	async fetchFoodsByTitle(title: string): Promise<RepositoryResponse<Food[]>> {
-		const finalFoodsUrl = new URL(this._baseFoodsUrlString + (title != "" ? "/search/findByTitleContaining" : ""))
-		finalFoodsUrl.searchParams.append("title", title)
+	async fetchFoodsByTitle(title: string, accessToken: string): Promise<RepositoryResponse<Food[]>> {
+		const finalFoodsUrl = new URL(this._baseFoodsUrlString)
+		if (title != "") {
+			finalFoodsUrl.searchParams.append("title", title)
+		}
 
 		const loadedFoods: Food[] = []
 		let error = null
 
 		try {
-			const response = await fetch(finalFoodsUrl)
+			const response = await fetch(finalFoodsUrl, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				},
+			})
 
 			if (!response.ok) {
 				throw new Error(response.statusText)
@@ -20,12 +26,13 @@ export class FoodRepository {
 
 			const responseJson = await response.json()
 
-			const responseData = responseJson._embedded.foods
+			const responseData = responseJson.content
 
 			for (const key in responseData) {
 				loadedFoods.push(
 					new Food(
 						responseData[key].id,
+						responseData[key].userId ?? -1,
 						responseData[key].title,
 						responseData[key].quantity,
 						responseData[key].unit,
@@ -43,13 +50,14 @@ export class FoodRepository {
 		return { value: loadedFoods, error: error }
 	}
 
-	async saveFood(food: Food): Promise<RepositoryResponse<number>> {
+	async saveFood(food: Food, accessToken: string): Promise<RepositoryResponse<number>> {
 		let id = -1
 		let error = null
 
 		// TODO: Figure out how to NOT DO THIS
 		const foodData = {
 			id: food.id,
+			userId: food.userId,
 			title: food.title,
 			quantity: food.quantity,
 			unit: food.unit,
@@ -59,14 +67,15 @@ export class FoodRepository {
 			proteins: food.proteins,
 		}
 
-		const foodIsNew = food.id < 0
+		console.log(foodData)
 
 		try {
-			const finalUrl = new URL(this._baseFoodsUrlString + (foodIsNew ? "" : `/${food.id}`))
+			const finalUrl = new URL(`${this._baseFoodsUrlString}`)
 			const response = await fetch(finalUrl, {
-				method: foodIsNew ? "POST" : "PUT",
+				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${accessToken}`,
 				},
 				body: JSON.stringify(foodData),
 			})
@@ -84,8 +93,7 @@ export class FoodRepository {
 		return { value: id, error: error }
 	}
 
-	// TODO: Deal with foreign key constraints
-	async deleteFood(foodId: number): Promise<RepositoryResponse<void>> {
+	async deleteFood(foodId: number, accessToken: string): Promise<RepositoryResponse<void>> {
 		let error = null
 
 		try {
@@ -94,6 +102,7 @@ export class FoodRepository {
 				method: "DELETE",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${accessToken}`,
 				},
 			})
 

@@ -1,6 +1,8 @@
 export class Food {
 	private _id: number
 
+	private _userId: number
+
 	private _title: string
 
 	private _quantity: number
@@ -17,6 +19,7 @@ export class Food {
 
 	constructor(
 		id: number,
+		userId: number,
 		title: string,
 		quantity: number,
 		unit: string,
@@ -26,6 +29,7 @@ export class Food {
 		proteins: number
 	) {
 		this._id = id
+		this._userId = userId
 		this._title = title
 		this._quantity = quantity
 		this._unit = unit
@@ -37,6 +41,10 @@ export class Food {
 
 	public get id(): number {
 		return this._id
+	}
+
+	public get userId(): number {
+		return this._userId
 	}
 
 	public get title(): string {

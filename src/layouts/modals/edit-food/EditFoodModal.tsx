@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import { title } from "process"
 import * as React from "react"
 import { useState } from "react"
@@ -6,7 +7,7 @@ import { idText } from "typescript"
 import { POSITIVE_FLOAT_PATTERN, POSITIVE_INT_PATTERN } from "../../../constants"
 import { Food } from "../../../data/food/Food"
 import { measurementUnits } from "../../../data/food/MeasurementUnits"
-import { foodRepository } from "../../../global/GlobalVariables"
+import { foodRepository } from "../../../global/Dependencies"
 import { FormSelectInput, FormSelectOption } from "../../re-useable/forms/FormSelectInput"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
@@ -19,6 +20,8 @@ interface EditFoodModalProps {
 }
 
 const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
+	const { getAccessTokenSilently } = useAuth0()
+
 	const { food, show, onClose, onSuccessfulSave } = props
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
 	const [error, setError] = useState<string | null>("")
@@ -71,6 +74,7 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 	const saveFood = async () => {
 		let foodToSave = new Food(
 			food?.id ?? -1,
+			food?.userId ?? -1,
 			fields.title.value,
 			Number.parseFloat(fields.quantity.value),
 			fields.unit.value,
@@ -81,7 +85,8 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 		)
 
 		try {
-			const response = await foodRepository.saveFood(foodToSave)
+			const accessToken = await getAccessTokenSilently()
+			const response = await foodRepository.saveFood(foodToSave, accessToken)
 
 			if (response.error) {
 				throw response.error
@@ -110,7 +115,7 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 			if (formIsValid()) {
 				saveFood()
 			} else {
-				console.log("Form is invalid")
+				console.log("Form is invalid, data = " + JSON.stringify(fields))
 			}
 			setValidationWasAttempted(true)
 		} catch (e) {

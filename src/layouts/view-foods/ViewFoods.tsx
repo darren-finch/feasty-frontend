@@ -1,7 +1,8 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import { useState, useEffect } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
 import { Food } from "../../data/food/Food"
-import { foodRepository } from "../../global/GlobalVariables"
+import { foodRepository } from "../../global/Dependencies"
 import EditFoodModal from "../modals/edit-food/EditFoodModal"
 import SearchableFoodsList from "../re-useable/SearchableFoodsList"
 
@@ -18,6 +19,7 @@ and filters based on the search text
 - whether there was an error when trying to save a food
 */
 const ViewFoods: React.FC = () => {
+	const { getAccessTokenSilently } = useAuth0()
 	const [foodsList, setFoodsList] = useState<Food[]>([])
 	const [isFoodsListLoading, setIsFoodsListLoading] = useState(true)
 	const [getFoodsListError, setGetFoodsListError] = useState<string | null>(null)
@@ -29,12 +31,14 @@ const ViewFoods: React.FC = () => {
 		setIsFoodsListLoading(true)
 
 		try {
-			const response = await foodRepository.fetchFoodsByTitle(searchQuery)
+			const accessToken = await getAccessTokenSilently()
+			const response = await foodRepository.fetchFoodsByTitle(searchQuery, accessToken)
 
 			if (response.error) {
 				throw response.error
 			} else {
 				setIsFoodsListLoading(false)
+				setGetFoodsListError(null)
 				setFoodsList(response.value)
 			}
 		} catch (err: any) {
@@ -59,7 +63,8 @@ const ViewFoods: React.FC = () => {
 	}
 	const handleDeleteFoodClicked = async (selectedFoodId: number) => {
 		setIsFoodsListLoading(true)
-		await foodRepository.deleteFood(selectedFoodId)
+		const accessToken = await getAccessTokenSilently()
+		await foodRepository.deleteFood(selectedFoodId, accessToken)
 		fetchFoods()
 	}
 	const handleEditFoodModalClose = () => setShowEditFoodModal(false)
