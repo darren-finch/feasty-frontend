@@ -27,6 +27,11 @@ const FormTextInput: React.FC<FormTextInputProps> = (props) => {
 				onChange={(e) => props.onChange(props.name, e.target.value, isValid())}
 				isValid={props.validationWasAttempted ? isValid() : undefined}
 				isInvalid={props.validationWasAttempted ? !isValid() : undefined}
+				onKeyDown={(e) => {
+					if (e.key == "Enter") {
+						e.preventDefault()
+					}
+				}}
 			/>
 			<Form.Control.Feedback type="invalid">{props.error}</Form.Control.Feedback>
 		</Form.Group>

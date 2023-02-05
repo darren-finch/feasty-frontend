@@ -9,6 +9,10 @@ h3,
 	font-family: "Caveat", sans-serif;
 }
 
+p {
+	margin-bottom: 0;
+}
+
 body {
 	margin: 0;
 	font-family: "Roboto", sans-serif;
@@ -68,4 +72,17 @@ body {
 	&:nth-of-type(3) {
 		top: 20px;
 	}
+}
+
+.list-item-margin-fix {
+	&:first-child {
+		margin-top: 0 !important;
+	}
+	&:last-child {
+		margin-bottom: 0 !important;
+	}
+}
+
+.card-bg-transition {
+	transition: background-color 100ms;
 }

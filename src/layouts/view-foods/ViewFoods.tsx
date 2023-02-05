@@ -2,9 +2,11 @@ import { useAuth0 } from "@auth0/auth0-react"
 import { useState, useEffect } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
 import { Food } from "../../data/food/Food"
+import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
 import { foodRepository } from "../../global/Dependencies"
-import EditFoodModal from "../modals/edit-food/EditFoodModal"
-import SearchableFoodsList from "../re-useable/SearchableFoodsList"
+import EditFoodModal from "./components/EditFoodModal"
+import SearchableAccordionList from "../re-useable/lists/SearchableAccordionList"
+import SearchableAccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
 
 /*
 Data for this screen:
@@ -51,6 +53,10 @@ const ViewFoods: React.FC = () => {
 		fetchFoods()
 	}, [])
 
+	const handleAddFoodClicked = () => {
+		setSelectedFood(null)
+		setShowEditFoodModal(true)
+	}
 	const handleSearchQueryChange = (newSearchQuery: string) => {
 		setSearchQuery(newSearchQuery)
 	}
@@ -76,28 +82,52 @@ const ViewFoods: React.FC = () => {
 	return (
 		<Container>
 			<Row className="my-4">
-				<Col>
+				<Col className="d-flex align-items-center justify-content-start">
 					<h1>Foods</h1>
 				</Col>
 				<Col className="d-flex align-items-center justify-content-end">
-					<Button
-						onClick={() => {
-							setSelectedFood(null)
-							setShowEditFoodModal(true)
-						}}>
+					<Button onClick={handleAddFoodClicked}>
 						<i className="bi bi-plus-lg"></i>
 					</Button>
 				</Col>
 			</Row>
-			<SearchableFoodsList
-				foodsList={foodsList}
-				searchQuery={searchQuery}
+			<SearchableAccordionList
+				elementList={foodsList.map((food) => {
+					const macroNutrientsString = getMacroNutrientsString(
+						food.calories,
+						food.fats,
+						food.carbs,
+						food.proteins
+					)
+					return (
+						<SearchableAccordionListElement
+							key={food.id}
+							headerElements={
+								<>
+									<div className="d-lg-none fw-bold">
+										<p>{`${food.title}`}</p>
+										<p>{`${food.quantity} ${food.unit}`}</p>
+									</div>
+									<div className="d-none d-lg-block">
+										<p className="mb-0 fw-bold">{`${food.title} | ${food.quantity} ${food.unit}`}</p>
+										<p>{macroNutrientsString}</p>
+									</div>
+								</>
+							}
+							bodyElements={macroNutrientsString}
+							entityId={food.id}
+							entity={food}
+							showDropdownAtLargeScreenSize={false}
+							onEditEntityClicked={handleEditFoodClicked}
+							onDeleteEntityClicked={handleDeleteFoodClicked}
+						/>
+					)
+				})}
 				isLoading={isFoodsListLoading}
 				error={getFoodsListError}
+				searchQuery={searchQuery}
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
-				onEditFoodClicked={handleEditFoodClicked}
-				onDeleteFoodClicked={handleDeleteFoodClicked}
 			/>
 			{/* We need the key prop below in order to re-mount the modal if the selected food changes.
 			Otherwise, the initial state of the modal will not change when we update the currently selected food, 
@@ -106,7 +136,7 @@ const ViewFoods: React.FC = () => {
 				key={currentlySelectedFood?.id}
 				food={currentlySelectedFood}
 				show={showEditFoodModal}
-				onClose={handleEditFoodModalClose}
+				onCloseClicked={handleEditFoodModalClose}
 				onSuccessfulSave={handleEditFoodModalSuccessfulSave}
 			/>
 		</Container>

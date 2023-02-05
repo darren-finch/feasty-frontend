@@ -4,10 +4,10 @@ import MealPlan from "./layouts/MealPlan"
 import CenteredSpinner from "./layouts/re-useable/misc/CenteredSpinner"
 import NavBar from "./layouts/re-useable/NavBar"
 import ViewFoods from "./layouts/view-foods/ViewFoods"
-import ViewMeals from "./layouts/ViewMeals"
+import ViewMeals from "./layouts/view-meals/ViewMeals"
 
 const App: React.FC = () => {
-	const { loginWithRedirect, isLoading, isAuthenticated, user } = useAuth0()
+	const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0()
 
 	if (isLoading) {
 		return <CenteredSpinner />
