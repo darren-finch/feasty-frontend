@@ -7,7 +7,7 @@ import ViewFoods from "./layouts/view-foods/ViewFoods"
 import ViewMeals from "./layouts/view-meals/ViewMeals"
 
 const App: React.FC = () => {
-	const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0()
+	const { loginWithRedirect, isLoading, isAuthenticated, user } = useAuth0()
 
 	if (isLoading) {
 		return <CenteredSpinner />

@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react"
-import * as React from "react"
+import NiceModal, { NiceModalHocProps, useModal } from "@ebay/nice-modal-react"
 import { useState } from "react"
 import { Button, Col, Form, Row } from "react-bootstrap"
 import { POSITIVE_FLOAT_PATTERN, POSITIVE_INT_PATTERN } from "../../../constants"
@@ -11,17 +11,13 @@ import FormTextInput from "../../re-useable/forms/FormTextInput"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
 import EditEntityModal from "../../re-useable/modals/EditEntityModal"
 
-interface EditFoodModalProps {
-	food: Food | null
-	show: boolean
-	onCloseClicked: () => void
-	onSuccessfulSave: () => void
-}
+// TODO: IN PROCESS
+const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
+	const modal = useModal("edit-food-modal")
+	const food: Food = modal.args?.food as Food
 
-const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 	const { getAccessTokenSilently } = useAuth0()
 
-	const { food, show, onCloseClicked, onSuccessfulSave } = props
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
 	const [error, setError] = useState<string | null>("")
 	const [fields, setFields] = useState({
@@ -91,7 +87,8 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 				throw response.error
 			} else {
 				setError(null)
-				onSuccessfulSave()
+				modal.resolve()
+				modal.hide()
 			}
 		} catch (err: any) {
 			setError(err)
@@ -103,16 +100,18 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 	}
 
 	const handleClose = () => {
+		modal.hide()
+	}
+
+	const handleExited = () => {
 		setError(null)
-		onCloseClicked()
+		modal.remove()
 	}
 
 	const handleSave = () => {
 		try {
 			if (formIsValid()) {
 				saveFood()
-			} else {
-				console.log("Form is invalid")
 			}
 			setValidationWasAttempted(true)
 		} catch (e) {
@@ -122,9 +121,10 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 
 	return (
 		<EditEntityModal
-			show={show}
+			show={modal.visible}
 			title={food == null ? "Add Food" : "Edit Food"}
-			onCloseClicked={handleClose}
+			onExited={handleExited}
+			onClose={handleClose}
 			onSaveClicked={handleSave}>
 			{!error && (
 				<Form id="foodForm" noValidate onSubmit={(e) => e.preventDefault()}>
@@ -254,6 +254,6 @@ const EditFoodModal: React.FC<EditFoodModalProps> = (props) => {
 			)}
 		</EditEntityModal>
 	)
-}
+})
 
 export default EditFoodModal

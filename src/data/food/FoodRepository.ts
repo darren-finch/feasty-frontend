@@ -67,8 +67,6 @@ export class FoodRepository {
 			proteins: food.proteins,
 		}
 
-		console.log(foodData)
-
 		try {
 			const finalUrl = new URL(`${this._baseFoodsUrlString}`)
 			const response = await fetch(finalUrl, {
