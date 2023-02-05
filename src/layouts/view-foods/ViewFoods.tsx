@@ -94,11 +94,11 @@ const ViewFoods: React.FC = () => {
 									</div>
 									<div className="d-none d-lg-block">
 										<p className="mb-0 fw-bold">{`${food.title} | ${food.quantity} ${food.unit}`}</p>
-										<p>{macroNutrientsString}</p>
+										<p>{`Macros: ${macroNutrientsString}`}</p>
 									</div>
 								</>
 							}
-							bodyElements={macroNutrientsString}
+							bodyElements={<p>{`Macros: ${macroNutrientsString}`}</p>}
 							entityId={food.id}
 							entity={food}
 							showDropdownAtLargeScreenSize={false}

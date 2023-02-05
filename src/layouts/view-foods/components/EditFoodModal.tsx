@@ -11,7 +11,6 @@ import FormTextInput from "../../re-useable/forms/FormTextInput"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
 import EditEntityModal from "../../re-useable/modals/EditEntityModal"
 
-// TODO: IN PROCESS
 const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	const modal = useModal("edit-food-modal")
 	const food: Food = modal.args?.food as Food
@@ -86,7 +85,6 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 			if (response.error) {
 				throw response.error
 			} else {
-				setError(null)
 				modal.resolve()
 				modal.hide()
 			}
