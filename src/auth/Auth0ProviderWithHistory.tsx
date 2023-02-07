@@ -21,7 +21,9 @@ export const Auth0ProviderWithHistory: React.FC<PropsWithChildren> = (props) => 
 			authorizationParams={{
 				redirect_uri: callbackUri,
 				audience: audience,
-			}}>
+			}}
+			useRefreshTokens={true}
+			cacheLocation="localstorage">
 			{props.children}
 		</Auth0Provider>
 	)

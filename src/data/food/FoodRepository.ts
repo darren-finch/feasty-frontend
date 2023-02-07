@@ -32,7 +32,6 @@ export class FoodRepository {
 				loadedFoods.push(
 					new Food(
 						responseData[key].id,
-						responseData[key].userId ?? -1,
 						responseData[key].title,
 						responseData[key].quantity,
 						responseData[key].unit,
@@ -57,7 +56,6 @@ export class FoodRepository {
 		// TODO: Figure out how to NOT DO THIS
 		const foodData = {
 			id: food.id,
-			userId: food.userId,
 			title: food.title,
 			quantity: food.quantity,
 			unit: food.unit,

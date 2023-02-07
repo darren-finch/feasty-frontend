@@ -3,6 +3,7 @@ import { Form } from "react-bootstrap"
 import { FormInputProps } from "./FormInputProps"
 
 interface FormTextInputProps extends FormInputProps {
+	minInputWidth?: string
 	maxInputWidth?: string
 	placeholder?: string
 	pattern?: string
@@ -21,7 +22,7 @@ const FormTextInput: React.FC<FormTextInputProps> = (props) => {
 		<Form.Group id={props.id}>
 			{props.label && <Form.Label>{props.label}</Form.Label>}
 			<Form.Control
-				style={{ maxWidth: props.maxInputWidth }}
+				style={{ maxWidth: props.maxInputWidth, minWidth: props.minInputWidth }}
 				type="text"
 				name={props.name}
 				value={props.value}

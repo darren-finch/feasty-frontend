@@ -68,7 +68,6 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	const saveFood = async () => {
 		let foodToSave = new Food(
 			food?.id ?? -1,
-			food?.userId ?? -1,
 			fields.title.value,
 			Number.parseFloat(fields.quantity.value),
 			fields.unit.value,
@@ -112,8 +111,8 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 				saveFood()
 			}
 			setValidationWasAttempted(true)
-		} catch (e) {
-			console.log(e)
+		} catch (err: any) {
+			setError(err)
 		}
 	}
 
@@ -121,6 +120,7 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 		<EditEntityModal
 			show={modal.visible}
 			title={food == null ? "Add Food" : "Edit Food"}
+			footerErrorMsg={error}
 			onExited={handleExited}
 			onClose={handleClose}
 			onSaveClicked={handleSave}>

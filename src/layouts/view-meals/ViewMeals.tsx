@@ -1,8 +1,9 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
 import { Meal } from "../../data/meal/Meal"
-import { MealFood } from "../../data/meal/MealFood"
+import { MealFoodCombinedId } from "../../data/meal/MealFood"
 import { mealRepository } from "../../global/Dependencies"
 import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
 import SearchableAccordionList from "../re-useable/lists/SearchableAccordionList"
@@ -10,6 +11,8 @@ import SearchableAccordionListElement from "../re-useable/lists/SearchableAccord
 import MealFoodCard from "./components/MealFoodCard"
 
 const ViewMeals = () => {
+	const { getAccessTokenSilently } = useAuth0()
+
 	const [mealsList, setMealsList] = useState<Meal[]>([])
 	const [isMealsListLoading, setIsMealsListLoading] = useState(true)
 	const [getMealsListError, setGetMealsListError] = useState<string | null>(null)
@@ -18,13 +21,15 @@ const ViewMeals = () => {
 	const fetchMeals = async () => {
 		setIsMealsListLoading(true)
 		try {
-			const response = await mealRepository.fetchMealsByTitle(searchQuery)
+			const accessToken = await getAccessTokenSilently()
+			const response = await mealRepository.fetchMealsByTitle(searchQuery, accessToken)
 
 			if (response.error) {
 				throw response.error
 			} else {
 				setIsMealsListLoading(false)
 				setMealsList(response.value)
+				setGetMealsListError(null)
 			}
 		} catch (err: any) {
 			setIsMealsListLoading(false)
@@ -38,19 +43,45 @@ const ViewMeals = () => {
 
 	// MEAL CARDS EVENT HANDLERS
 	const handleAddMealClicked = () => {
-		NiceModal.show("edit-meal-modal").then(() => {})
+		NiceModal.show("edit-meal-modal").then(() => {
+			fetchMeals()
+		})
 	}
 	const handleEditMealClicked = (selectedMeal: Meal) => {
-		NiceModal.show("edit-meal-modal", { meal: selectedMeal }).then(() => {})
+		NiceModal.show("edit-meal-modal", { meal: selectedMeal }).then(() => {
+			fetchMeals()
+		})
 	}
-	const handleDeleteMealClicked = (selectedMealId: number) => {
-		console.log("Delete meal #" + selectedMealId)
+	const handleDeleteMealClicked = async (selectedMealId: number) => {
+		setIsMealsListLoading(true)
+		const accessToken = await getAccessTokenSilently()
+		await mealRepository.deleteMeal(selectedMealId, accessToken)
+		fetchMeals()
 	}
 
 	// MEAL FOOD EVENT HANDLERS
-	const handleEditMealFoodClicked = (selectedMealFood: MealFood) => {}
-	const handleDeleteMealFoodClicked = (selectedMealFoodId: number) => {
-		console.log("Delete meal food #" + selectedMealFoodId)
+	const handleDeleteMealFoodClicked = async (selectedMealFoodId: MealFoodCombinedId) => {
+		const meal = mealsList.find((meal) => meal.id == selectedMealFoodId.mealId)
+		if (meal) {
+			const newMeal = new Meal(
+				meal.id,
+				meal.title,
+				meal.mealFoods.filter((mealFood) => mealFood.combinedId != selectedMealFoodId)
+			)
+
+			try {
+				const accessToken = await getAccessTokenSilently()
+				const response = await mealRepository.saveMeal(newMeal, accessToken)
+
+				if (response.error) {
+					throw response.error
+				} else {
+					fetchMeals()
+				}
+			} catch (err: any) {
+				setGetMealsListError(err)
+			}
+		}
 	}
 
 	// SEARCH HEADER EVENT HANDLERS
@@ -60,10 +91,6 @@ const ViewMeals = () => {
 	const handleSearchClicked = () => {
 		fetchMeals()
 	}
-
-	// EDIT MEAL MODAL EVENT HANDLERS
-	const handleEditMealModalCloseClicked = () => {}
-	const handleEditMealModalSuccessfulSave = () => {}
 
 	return (
 		<Container>
@@ -110,7 +137,7 @@ const ViewMeals = () => {
 									<p>Foods</p>
 									{meal.mealFoods.map((mealFood) => (
 										<MealFoodCard
-											key={mealFood.id}
+											key={mealFood.combinedId.toString()}
 											mealFood={mealFood}
 											onQuantityChange={() => {}}
 											onDeleteMealFoodClicked={handleDeleteMealFoodClicked}

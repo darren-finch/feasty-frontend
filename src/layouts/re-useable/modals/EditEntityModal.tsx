@@ -6,13 +6,14 @@ interface EditEntityModalProps {
 	title: string
 	closeMsg?: string
 	saveMsg?: string
+	footerErrorMsg?: string | null
 	onExited?: () => void
 	onClose?: () => void
 	onSaveClicked?: () => void
 }
 
 const EditEntityModal: React.FC<PropsWithChildren<EditEntityModalProps>> = (props) => {
-	const { show, title, closeMsg, saveMsg, onExited, onClose, onSaveClicked } = props
+	const { show, title, closeMsg, saveMsg, footerErrorMsg, onExited, onClose, onSaveClicked } = props
 
 	return (
 		<Modal show={show} onExited={onExited} onHide={onClose} centered>
@@ -23,6 +24,7 @@ const EditEntityModal: React.FC<PropsWithChildren<EditEntityModalProps>> = (prop
 			<Modal.Body>{props.children}</Modal.Body>
 
 			<Modal.Footer>
+				{footerErrorMsg && <p className="text-danger flex-grow-1">{footerErrorMsg}</p>}
 				<Button variant="secondary" onClick={onClose}>
 					{closeMsg ?? "Close"}
 				</Button>

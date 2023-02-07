@@ -1,13 +1,14 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { useModal } from "@ebay/nice-modal-react"
-import { useState } from "react"
-import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap"
+import { useEffect, useState } from "react"
+import { Button, Card, Col, Row, Spinner } from "react-bootstrap"
 import { Food } from "../../../data/food/Food"
 import { Meal } from "../../../data/meal/Meal"
-import { MealFood } from "../../../data/meal/MealFood"
+import { MealFood, MealFoodCombinedId } from "../../../data/meal/MealFood"
+import { foodRepository, mealRepository } from "../../../global/Dependencies"
 import { getMacroNutrientsString } from "../../../services/GetMacroNutrientsString"
-import { testFood1, testFood2, testFood3 } from "../../../util/TestUtils"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
-import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
+import NoResultsDisplay from "../../re-useable/misc/NoResultsDisplay"
 import SearchHeader from "../../re-useable/misc/SearchHeader"
 import EditEntityModal from "../../re-useable/modals/EditEntityModal"
 import MealFoodCard from "./MealFoodCard"
@@ -15,17 +16,18 @@ import MealFoodCard from "./MealFoodCard"
 enum EditMealModalScreen {
 	EDIT_MEAL,
 	LOADING,
-	ERROR,
 	SELECT_MEAL_FOOD,
 }
 
 const EditMealModal = NiceModal.create(() => {
+	const { getAccessTokenSilently } = useAuth0()
+
 	const modal = useModal("edit-meal-modal")
 	const meal: Meal = modal.args?.meal as Meal
 
 	const [currentScreenValue, setCurrentScreenValue] = useState(EditMealModalScreen.EDIT_MEAL)
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
-	const [error, setError] = useState<string | null>("")
+	const [footerError, setFooterError] = useState<string | null>("")
 	const [fields, setFields] = useState({
 		title: {
 			value: meal?.title ?? "",
@@ -37,10 +39,41 @@ const EditMealModal = NiceModal.create(() => {
 		},
 	})
 
+	const [foodsList, setFoodsList] = useState<Food[]>([])
+	const [isLoadingFoodsList, setIsLoadingFoodsList] = useState(true)
 	const [selectedFood, setSelectedFood] = useState<Food | null>(null)
 	const [searchQuery, setSearchQuery] = useState("")
 
+	useEffect(() => {
+		fetchFoods()
+	}, [])
+
+	const fetchFoods = async () => {
+		setIsLoadingFoodsList(true)
+		try {
+			const accessToken = await getAccessTokenSilently()
+			const response = await foodRepository.fetchFoodsByTitle(searchQuery, accessToken)
+
+			if (response.error) {
+				throw response.error
+			} else {
+				setIsLoadingFoodsList(false)
+				setFoodsList(response.value)
+				setFooterError(null)
+			}
+		} catch (err: any) {
+			setFooterError(err)
+			setIsLoadingFoodsList(false)
+		}
+	}
+
 	const setCurrentScreen = (nextScreen: EditMealModalScreen) => {
+		if (nextScreen == EditMealModalScreen.SELECT_MEAL_FOOD) {
+			fetchFoods()
+		}
+
+		setFooterError(null)
+
 		// We delay setting the next screen so we can display a spinner for a short time
 		setCurrentScreenValue(EditMealModalScreen.LOADING)
 		const screenTransitionTimeMs = Math.random() * 200
@@ -49,7 +82,23 @@ const EditMealModal = NiceModal.create(() => {
 		}, screenTransitionTimeMs)
 	}
 
-	const saveMeal = () => {}
+	const saveMeal = async () => {
+		const newMeal = new Meal(meal?.id ?? -1, fields.title.value, fields.mealFoods.value)
+
+		try {
+			const accessToken = await getAccessTokenSilently()
+			const response = await mealRepository.saveMeal(newMeal, accessToken)
+
+			if (response.error) {
+				throw response.error
+			} else {
+				modal.resolve()
+				modal.hide()
+			}
+		} catch (err: any) {
+			setFooterError(err)
+		}
+	}
 
 	const formIsValid = () => {
 		// Assume the form is valid and when we find a field that is invalid, we will make the form invalid.
@@ -69,24 +118,29 @@ const EditMealModal = NiceModal.create(() => {
 	const handleSaveClicked = () => {
 		switch (currentScreenValue) {
 			case EditMealModalScreen.EDIT_MEAL:
-				try {
-					if (formIsValid()) {
-						console.log("Form is valid")
-						saveMeal()
-					} else {
-						console.log("Form is invalid")
-					}
-					setValidationWasAttempted(true)
-				} catch (e) {
-					console.log(e)
+				if (formIsValid()) {
+					setFooterError(null)
+					saveMeal()
 				}
+				// TODO: Figure out better way to get this error message
+				if (fields.mealFoods.value.length < 1) {
+					setFooterError("Must have more than one food.")
+				}
+				setValidationWasAttempted(true)
 				break
 			case EditMealModalScreen.SELECT_MEAL_FOOD:
 				if (selectedFood != null) {
-					addFoodToMeal(selectedFood)
-					setSelectedFood(null)
-					setSearchQuery("")
-					setCurrentScreen(EditMealModalScreen.EDIT_MEAL)
+					const foodAlreadyExistsInMealFoods = fields.mealFoods.value.some(
+						(mealFood) => mealFood.combinedId.foodId == selectedFood.id
+					)
+					if (!foodAlreadyExistsInMealFoods) {
+						addFoodToMeal(selectedFood)
+						setSelectedFood(null)
+						setSearchQuery("")
+						setCurrentScreen(EditMealModalScreen.EDIT_MEAL)
+					} else {
+						setFooterError("Cannot add more than one of each food type.")
+					}
 				}
 		}
 	}
@@ -97,7 +151,11 @@ const EditMealModal = NiceModal.create(() => {
 			mealFoods: {
 				value: [
 					...fields.mealFoods.value,
-					new MealFood(fields.mealFoods.value.length + 1, selectedFood, selectedFood.quantity),
+					new MealFood(
+						new MealFoodCombinedId(meal?.id ?? -1, selectedFood.id),
+						selectedFood,
+						selectedFood.quantity
+					),
 				],
 				isValid: true,
 			},
@@ -118,7 +176,7 @@ const EditMealModal = NiceModal.create(() => {
 	}
 
 	const handleExited = () => {
-		setError(null)
+		setFooterError(null)
 		modal.remove()
 	}
 
@@ -130,12 +188,12 @@ const EditMealModal = NiceModal.create(() => {
 		setCurrentScreen(EditMealModalScreen.SELECT_MEAL_FOOD)
 	}
 
-	const handleMealFoodQuantityChange = (mealFoodId: number, newQuantity: number) => {
+	const handleMealFoodQuantityChange = (mealFoodId: MealFoodCombinedId, newQuantity: number) => {
 		const newMealFoods = fields.mealFoods.value
-		const indexOfMealFoodToUpdate = newMealFoods.findIndex((mealFood) => mealFood.id == mealFoodId)
+		const indexOfMealFoodToUpdate = newMealFoods.findIndex((mealFood) => mealFood.combinedId == mealFoodId)
 		const mealFoodToUpdate = newMealFoods[indexOfMealFoodToUpdate]
 		newMealFoods[indexOfMealFoodToUpdate] = new MealFood(
-			mealFoodToUpdate.id,
+			mealFoodToUpdate.combinedId,
 			mealFoodToUpdate.baseFood,
 			newQuantity
 		)
@@ -148,12 +206,19 @@ const EditMealModal = NiceModal.create(() => {
 		})
 	}
 
-	const handleDeleteMealFoodClicked = () => {
-		console.log("Delete meal food")
+	const handleDeleteMealFoodClicked = (selectedMealFoodId: MealFoodCombinedId) => {
+		const newMealFoods = fields.mealFoods.value.filter((mealFood) => mealFood.combinedId != selectedMealFoodId)
+		setFields({
+			...fields,
+			mealFoods: {
+				isValid: newMealFoods.length > 0,
+				value: newMealFoods,
+			},
+		})
 	}
 
 	const handleSearchClicked = () => {
-		console.log("Search clicked")
+		fetchFoods()
 	}
 
 	const handleSearchQueryChange = (newSearchQuery: string) => {
@@ -200,6 +265,7 @@ const EditMealModal = NiceModal.create(() => {
 			title={modalTitle}
 			closeMsg={modalCloseMsg}
 			saveMsg={modalSaveMsg}
+			footerErrorMsg={footerError}
 			onClose={handleClose}
 			onExited={handleExited}
 			onSaveClicked={handleSaveClicked}>
@@ -241,16 +307,21 @@ const EditMealModal = NiceModal.create(() => {
 						</Col>
 					</Row>
 
-					<div style={{ height: "25vh" }} className="my-2 overflow-auto">
-						{fields.mealFoods.value.map((mealFood) => (
-							<MealFoodCard
-								key={mealFood.id}
-								mealFood={mealFood}
-								onQuantityChange={handleMealFoodQuantityChange}
-								onDeleteMealFoodClicked={handleDeleteMealFoodClicked}
-							/>
-						))}
-					</div>
+					{fields.mealFoods.value.length > 0 && (
+						<div style={{ height: "25vh" }} className="my-2 overflow-auto">
+							{fields.mealFoods.value.map((mealFood) => (
+								<MealFoodCard
+									key={mealFood.combinedId.toString()}
+									mealFood={mealFood}
+									allowQuantityChange={true}
+									onQuantityChange={handleMealFoodQuantityChange}
+									onDeleteMealFoodClicked={handleDeleteMealFoodClicked}
+								/>
+							))}
+						</div>
+					)}
+
+					{fields.mealFoods.value.length < 1 && <NoResultsDisplay />}
 				</>
 			)}
 			{currentScreenValue == EditMealModalScreen.SELECT_MEAL_FOOD && (
@@ -260,33 +331,26 @@ const EditMealModal = NiceModal.create(() => {
 						onSearchClicked={handleSearchClicked}
 						onSearchQueryChange={handleSearchQueryChange}
 					/>
-					<div style={{ height: "25vh" }} className="my-2 overflow-auto">
-						{[testFood1, testFood2, testFood3].map((food) => (
-							<Card
-								key={food.id}
-								className={`${
-									food.id == selectedFood?.id ? "bg-primary" : ""
-								} my-2 user-select-none list-item-margin-fix card-bg-transition`}
-								style={{ cursor: "pointer" }}
-								onClick={() => handleCardClicked(food)}
-								onBlur={() => console.log(`Card #${food.id} is blurred`)}>
-								<Card.Body>{food.title}</Card.Body>
-							</Card>
-						))}
-					</div>
+					{!isLoadingFoodsList && (
+						<div style={{ height: "25vh" }} className="my-2 overflow-auto">
+							{foodsList.map((food) => (
+								<Card
+									key={food.id}
+									className={`${
+										food.id == selectedFood?.id ? "bg-primary" : ""
+									} my-2 user-select-none list-item-margin-fix card-bg-transition`}
+									style={{ cursor: "pointer" }}
+									onClick={() => handleCardClicked(food)}
+									onBlur={() => {}}>
+									<Card.Body>{food.title}</Card.Body>
+								</Card>
+							))}
+						</div>
+					)}
+					{isLoadingFoodsList && <Spinner />}
 				</>
 			)}
 			{currentScreenValue == EditMealModalScreen.LOADING && <Spinner />}
-			{currentScreenValue == EditMealModalScreen.ERROR && (
-				<Row>
-					<Col>
-						<ErrorDisplay error={error} />
-					</Col>
-					<Col>
-						<Button onClick={() => saveMeal()}>Retry</Button>
-					</Col>
-				</Row>
-			)}
 		</EditEntityModal>
 	)
 })
