@@ -21,8 +21,6 @@ const NavBar: React.FC = () => {
 							src={user?.picture}
 							alt="Profile picture"
 						/>
-						{/* <div style={{ fontSize: "1.5rem" }} className="bi bi-person-circle"></div> */}
-						<div style={{ fontSize: "1.5rem" }} className="bi bi-gear-fill"></div>
 						<Button onClick={() => logout()}>Log Out</Button>
 					</div>
 				</div>
@@ -66,8 +64,6 @@ const NavBar: React.FC = () => {
 								src={user?.picture}
 								alt="Profile picture"
 							/>
-							{/* <div style={{ fontSize: "1.5rem" }} className="bi bi-person-circle"></div> */}
-							<div style={{ fontSize: "1.5rem" }} className="bi bi-gear-fill"></div>
 							<Button onClick={() => logout()}>Log Out</Button>
 						</div>
 					</div>
