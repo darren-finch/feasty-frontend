@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react"
-import { Button, Modal } from "react-bootstrap"
+import { Button, Modal, Spinner } from "react-bootstrap"
 import ErrorDisplay from "../misc/ErrorDisplay"
 
 interface EditEntityModalTemplateProps {
@@ -7,6 +7,7 @@ interface EditEntityModalTemplateProps {
 	title: string
 	closeMsg?: string
 	saveMsg?: string
+	isLoading?: boolean
 	footerError?: any | null
 	onExited?: () => void
 	onClose?: () => void
@@ -14,7 +15,7 @@ interface EditEntityModalTemplateProps {
 }
 
 const EditEntityModalTemplate: React.FC<PropsWithChildren<EditEntityModalTemplateProps>> = (props) => {
-	const { show, title, closeMsg, saveMsg, footerError, onExited, onClose, onSaveClicked } = props
+	const { show, title, closeMsg, saveMsg, isLoading, footerError, onExited, onClose, onSaveClicked } = props
 
 	return (
 		<Modal show={show} onExited={onExited} onHide={onClose} centered>
@@ -22,7 +23,8 @@ const EditEntityModalTemplate: React.FC<PropsWithChildren<EditEntityModalTemplat
 				<Modal.Title>{title}</Modal.Title>
 			</Modal.Header>
 
-			<Modal.Body>{props.children}</Modal.Body>
+			{isLoading && <Spinner />}
+			{!isLoading && <Modal.Body>{props.children}</Modal.Body>}
 
 			<Modal.Footer className="d-flex align-items-center">
 				{footerError && (

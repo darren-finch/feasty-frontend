@@ -189,7 +189,7 @@ const ViewMealPlan: React.FC = () => {
 			if (response.error) {
 				throw response.error
 			} else {
-				fetchMealPlansMetaDataList()
+				fetchSelectedMealPlanFromId(selectedMealPlan!.id)
 			}
 		} catch (err: any) {
 			// Let's do a toast instead of an alert here in the future

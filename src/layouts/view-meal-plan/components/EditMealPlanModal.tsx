@@ -13,6 +13,8 @@ const EditMealPlanMetaDataModal = NiceModal.create(() => {
 	const modal = useModal("edit-meal-plan-meta-data-modal")
 	const mealPlanMetaData: MealPlanMetaData = modal.args?.mealPlanMetaData as MealPlanMetaData
 
+	const [isSavingMealPlan, setIsSavingMealPlan] = useState(false)
+
 	const { getAccessTokenSilently } = useAuth0()
 
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
@@ -57,6 +59,7 @@ const EditMealPlanMetaDataModal = NiceModal.create(() => {
 
 	const saveMealPlanMetaData = async () => {
 		try {
+			setIsSavingMealPlan(true)
 			const mealPlanMetaDataToSave = new MealPlanMetaData(
 				mealPlanMetaData?.id ?? -1,
 				fields.title.value,
@@ -71,10 +74,12 @@ const EditMealPlanMetaDataModal = NiceModal.create(() => {
 			if (response.error) {
 				throw response.error
 			} else {
+				setIsSavingMealPlan(false)
 				modal.resolve(response.value)
 				modal.hide()
 			}
 		} catch (err: any) {
+			setIsSavingMealPlan(false)
 			setFooterError(err)
 		}
 	}
@@ -107,6 +112,7 @@ const EditMealPlanMetaDataModal = NiceModal.create(() => {
 		<EditEntityModalTemplate
 			show={modal.visible}
 			title={mealPlanMetaData == null ? "Add Meal Plan" : "Edit Meal Plan"}
+			isLoading={isSavingMealPlan}
 			footerError={footerError}
 			onExited={handleExited}
 			onClose={handleClose}

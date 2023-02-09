@@ -26,6 +26,8 @@ const EditMealModal = NiceModal.create(() => {
 	const modal = useModal("edit-meal-modal")
 	const meal: Meal = modal.args?.meal as Meal
 
+	const [isSavingMeal, setIsSavingMeal] = useState(false)
+
 	const [currentScreenValue, setCurrentScreenValue] = useState(EditMealModalScreen.EDIT_MEAL)
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
 	const [footerError, setFooterError] = useState<string | null>("")
@@ -84,19 +86,21 @@ const EditMealModal = NiceModal.create(() => {
 	}
 
 	const saveMeal = async () => {
-		const newMeal = new Meal(meal?.id ?? -1, fields.title.value, fields.mealFoods.value)
-
 		try {
+			setIsSavingMeal(true)
+			const newMeal = new Meal(meal?.id ?? -1, fields.title.value, fields.mealFoods.value)
 			const accessToken = await getAccessTokenSilently()
 			const response = await mealRepository.saveMeal(newMeal, accessToken)
 
 			if (response.error) {
 				throw response.error
 			} else {
+				setIsSavingMeal(false)
 				modal.resolve()
 				modal.hide()
 			}
 		} catch (err: any) {
+			setIsSavingMeal(false)
 			setFooterError(err)
 		}
 	}
@@ -266,6 +270,7 @@ const EditMealModal = NiceModal.create(() => {
 			title={modalTitle}
 			closeMsg={modalCloseMsg}
 			saveMsg={modalSaveMsg}
+			isLoading={isSavingMeal}
 			footerError={footerError}
 			onClose={handleClose}
 			onExited={handleExited}

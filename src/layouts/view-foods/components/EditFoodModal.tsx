@@ -15,6 +15,8 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	const modal = useModal("edit-food-modal")
 	const food: Food = modal.args?.food as Food
 
+	const [isSavingFood, setIsSavingFood] = useState(false)
+
 	const { getAccessTokenSilently } = useAuth0()
 
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
@@ -66,28 +68,31 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	}
 
 	const saveFood = async () => {
-		let foodToSave = new Food(
-			food?.id ?? -1,
-			fields.title.value,
-			Number.parseFloat(fields.quantity.value),
-			fields.unit.value,
-			Number.parseInt(fields.calories.value),
-			Number.parseInt(fields.fats.value),
-			Number.parseInt(fields.carbs.value),
-			Number.parseInt(fields.proteins.value)
-		)
-
 		try {
+			setIsSavingFood(true)
+			let foodToSave = new Food(
+				food?.id ?? -1,
+				fields.title.value,
+				Number.parseFloat(fields.quantity.value),
+				fields.unit.value,
+				Number.parseInt(fields.calories.value),
+				Number.parseInt(fields.fats.value),
+				Number.parseInt(fields.carbs.value),
+				Number.parseInt(fields.proteins.value)
+			)
+
 			const accessToken = await getAccessTokenSilently()
 			const response = await foodRepository.saveFood(foodToSave, accessToken)
 
 			if (response.error) {
 				throw response.error
 			} else {
+				setIsSavingFood(false)
 				modal.resolve()
 				modal.hide()
 			}
 		} catch (err: any) {
+			setIsSavingFood(false)
 			setFooterError(err)
 		}
 	}
@@ -120,6 +125,7 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 		<EditEntityModalTemplate
 			show={modal.visible}
 			title={food == null ? "Add Food" : "Edit Food"}
+			isLoading={isSavingFood}
 			footerError={footerError}
 			onExited={handleExited}
 			onClose={handleClose}

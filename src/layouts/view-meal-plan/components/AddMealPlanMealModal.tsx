@@ -15,6 +15,8 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 	const modal = useModal("add-meal-plan-meal-modal")
 	const mealPlanId = (modal.args?.mealPlanId as number) ?? -1
 
+	const [isSavingMealPlanMeal, setIsSavingMealPlanMeal] = useState(false)
+
 	const { getAccessTokenSilently } = useAuth0()
 
 	const [searchQuery, setSearchQuery] = useState("")
@@ -56,9 +58,10 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 	}
 
 	const handleSaveClicked = async () => {
-		const selectedMeal = mealsList.find((meal) => meal.id == selectedMealId)
 		try {
+			const selectedMeal = mealsList.find((meal) => meal.id == selectedMealId)
 			if (selectedMeal && mealPlanId) {
+				setIsSavingMealPlanMeal(true)
 				const newMealPlanMeal = new MealPlanMeal(
 					new MealPlanMealCombinedId(mealPlanId, selectedMealId),
 					selectedMeal
@@ -70,6 +73,7 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 				if (response.error) {
 					throw response.error
 				} else {
+					setIsSavingMealPlanMeal(false)
 					modal.resolve()
 					modal.hide()
 				}
@@ -77,6 +81,7 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 				setFooterError("The selected meal id was not valid or the meal plan id passed as arg was not valid.")
 			}
 		} catch (err: any) {
+			setIsSavingMealPlanMeal(false)
 			setFooterError(err)
 		}
 	}
@@ -97,6 +102,7 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 		<EditEntityModalTemplate
 			show={modal.visible}
 			title={"Add Meal To Meal Plan"}
+			isLoading={isSavingMealPlanMeal}
 			footerError={footerError}
 			onClose={handleClose}
 			onExited={handleExited}
