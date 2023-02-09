@@ -54,11 +54,18 @@ const ViewFoods: React.FC = () => {
 	const handleEditFoodClicked = (selectedFood: Food) => {
 		NiceModal.show("edit-food-modal", { food: selectedFood }).then(handleEditFoodModalSuccessfulSave)
 	}
-	const handleDeleteFoodClicked = async (selectedFoodId: number) => {
-		setIsFoodsListLoading(true)
-		const accessToken = await getAccessTokenSilently()
-		await foodRepository.deleteFood(selectedFoodId, accessToken)
-		fetchFoods()
+	const handleDeleteFoodClicked = (selectedFoodId: number) => {
+		NiceModal.show("confirmation-modal", {
+			mainMsg: "This will remove this food from all meals that reference it.",
+		}).then(
+			async () => {
+				setIsFoodsListLoading(true)
+				const accessToken = await getAccessTokenSilently()
+				await foodRepository.deleteFood(selectedFoodId, accessToken)
+				fetchFoods()
+			},
+			() => {}
+		)
 	}
 	const handleEditFoodModalSuccessfulSave = () => {
 		fetchFoods()

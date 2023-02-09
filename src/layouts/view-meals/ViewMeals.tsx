@@ -53,11 +53,18 @@ const ViewMeals = () => {
 			fetchMeals()
 		})
 	}
-	const handleDeleteMealClicked = async (selectedMealId: number) => {
-		setIsMealsListLoading(true)
-		const accessToken = await getAccessTokenSilently()
-		await mealRepository.deleteMeal(selectedMealId, accessToken)
-		fetchMeals()
+	const handleDeleteMealClicked = (selectedMealId: number) => {
+		NiceModal.show("confirmation-modal", {
+			mainMsg: "This will remove this meal from all meal plans that reference it.",
+		}).then(
+			async () => {
+				setIsMealsListLoading(true)
+				const accessToken = await getAccessTokenSilently()
+				await mealRepository.deleteMeal(selectedMealId, accessToken)
+				fetchMeals()
+			},
+			() => {}
+		)
 	}
 
 	// MEAL FOOD EVENT HANDLERS
