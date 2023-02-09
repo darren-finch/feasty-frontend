@@ -245,7 +245,8 @@ const ViewMealPlan: React.FC = () => {
 											)}
 										/>
 										<p className="text-center">
-											{aggregatedMacros.calories}/{selectedMealPlan.requiredCalories}
+											{Math.round(aggregatedMacros.calories)}/
+											{Math.round(selectedMealPlan.requiredCalories)}
 										</p>
 										<h4 className="mt-2 text-center">Calories</h4>
 									</Col>
@@ -257,7 +258,8 @@ const ViewMealPlan: React.FC = () => {
 											)}
 										/>
 										<p className="text-center">
-											{aggregatedMacros.fats}/{selectedMealPlan.requiredFats}
+											{Math.round(aggregatedMacros.fats)}/
+											{Math.round(selectedMealPlan.requiredFats)}
 										</p>
 										<h4 className="mt-2 text-center">Fats</h4>
 									</Col>
@@ -269,7 +271,8 @@ const ViewMealPlan: React.FC = () => {
 											)}
 										/>
 										<p className="text-center">
-											{aggregatedMacros.carbs}/{selectedMealPlan.requiredCarbs}
+											{Math.round(aggregatedMacros.carbs)}/
+											{Math.round(selectedMealPlan.requiredCarbs)}
 										</p>
 										<h4 className="mt-2 text-center">Carbs</h4>
 									</Col>
@@ -281,7 +284,8 @@ const ViewMealPlan: React.FC = () => {
 											)}
 										/>
 										<p className="text-center">
-											{aggregatedMacros.proteins}/{selectedMealPlan.requiredProteins}
+											{Math.round(aggregatedMacros.proteins)}/
+											{Math.round(selectedMealPlan.requiredProteins)}
 										</p>
 										<h4 className="mt-2 text-center">Proteins</h4>
 									</Col>
@@ -389,45 +393,47 @@ const ViewMealPlan: React.FC = () => {
 										</Button>
 									</div>
 
-									<AccordionList
-										elementList={selectedMealPlan?.mealPlanMeals.map((mealPlanMeal) => {
-											const aggregatedMacros = mealPlanMeal.meal.aggregatedMacros
+									<div style={{ maxHeight: "75vh" }} className="overflow-auto">
+										<AccordionList
+											elementList={selectedMealPlan?.mealPlanMeals.map((mealPlanMeal) => {
+												const aggregatedMacros = mealPlanMeal.meal.aggregatedMacros
 
-											return (
-												<AccordionListElement
-													key={mealPlanMeal.combinedId.mealId}
-													headerElements={
-														<p className="fw-bold">{`${
-															mealPlanMeal.meal.title
-														} | ${getMacroNutrientsString(
-															aggregatedMacros.calories,
-															aggregatedMacros.fats,
-															aggregatedMacros.carbs,
-															aggregatedMacros.proteins
-														)}`}</p>
-													}
-													bodyElements={
-														<div>
-															<p>Foods</p>
-															{mealPlanMeal.meal.mealFoods.map((mealFood) => (
-																<MealFoodCard
-																	key={mealFood.combinedId.toString()}
-																	mealFood={mealFood}
-																/>
-															))}
-														</div>
-													}
-													entityId={mealPlanMeal.combinedId.mealId}
-													entity={mealPlanMeal}
-													onDeleteEntityClicked={() =>
-														handleDeleteMealPlanMealClicked(mealPlanMeal.combinedId)
-													}
-												/>
-											)
-										})}
-										isLoading={false}
-										error={null}
-									/>
+												return (
+													<AccordionListElement
+														key={mealPlanMeal.combinedId.mealId}
+														headerElements={
+															<p className="fw-bold">{`${
+																mealPlanMeal.meal.title
+															} | ${getMacroNutrientsString(
+																aggregatedMacros.calories,
+																aggregatedMacros.fats,
+																aggregatedMacros.carbs,
+																aggregatedMacros.proteins
+															)}`}</p>
+														}
+														bodyElements={
+															<div>
+																<p>Foods</p>
+																{mealPlanMeal.meal.mealFoods.map((mealFood) => (
+																	<MealFoodCard
+																		key={mealFood.combinedId.toString()}
+																		mealFood={mealFood}
+																	/>
+																))}
+															</div>
+														}
+														entityId={mealPlanMeal.combinedId.mealId}
+														entity={mealPlanMeal}
+														onDeleteEntityClicked={() =>
+															handleDeleteMealPlanMealClicked(mealPlanMeal.combinedId)
+														}
+													/>
+												)
+											})}
+											isLoading={false}
+											error={null}
+										/>
+									</div>
 								</>
 							)}
 						</div>

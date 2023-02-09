@@ -81,41 +81,43 @@ const ViewFoods: React.FC = () => {
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
 			/>
-			<AccordionList
-				elementList={foodsList.map((food) => {
-					const macroNutrientsString = getMacroNutrientsString(
-						food.calories,
-						food.fats,
-						food.carbs,
-						food.proteins
-					)
-					return (
-						<AccordionListElement
-							key={food.id}
-							headerElements={
-								<>
-									<div className="d-lg-none fw-bold">
-										<p>{`${food.title}`}</p>
-										<p>{`${food.quantity} ${food.unit}`}</p>
-									</div>
-									<div className="d-none d-lg-block">
-										<p className="mb-0 fw-bold">{`${food.title} | ${food.quantity} ${food.unit}`}</p>
-										<p>{`Macros: ${macroNutrientsString}`}</p>
-									</div>
-								</>
-							}
-							bodyElements={<p>{`Macros: ${macroNutrientsString}`}</p>}
-							entityId={food.id}
-							entity={food}
-							showDropdownAtLargeScreenSize={false}
-							onEditEntityClicked={handleEditFoodClicked}
-							onDeleteEntityClicked={handleDeleteFoodClicked}
-						/>
-					)
-				})}
-				isLoading={isFoodsListLoading}
-				error={fetchFoodsListError}
-			/>
+			<div style={{ maxHeight: "75vh" }} className="overflow-auto">
+				<AccordionList
+					elementList={foodsList.map((food) => {
+						const macroNutrientsString = getMacroNutrientsString(
+							food.calories,
+							food.fats,
+							food.carbs,
+							food.proteins
+						)
+						return (
+							<AccordionListElement
+								key={food.id}
+								headerElements={
+									<>
+										<div className="d-lg-none fw-bold">
+											<p>{`${food.title}`}</p>
+											<p>{`${food.quantity} ${food.unit}`}</p>
+										</div>
+										<div className="d-none d-lg-block">
+											<p className="mb-0 fw-bold">{`${food.title} | ${food.quantity} ${food.unit}`}</p>
+											<p>{`Macros: ${macroNutrientsString}`}</p>
+										</div>
+									</>
+								}
+								bodyElements={<p>{`Macros: ${macroNutrientsString}`}</p>}
+								entityId={food.id}
+								entity={food}
+								showDropdownAtLargeScreenSize={false}
+								onEditEntityClicked={handleEditFoodClicked}
+								onDeleteEntityClicked={handleDeleteFoodClicked}
+							/>
+						)
+					})}
+					isLoading={isFoodsListLoading}
+					error={fetchFoodsListError}
+				/>
+			</div>
 		</Container>
 	)
 }

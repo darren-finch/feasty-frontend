@@ -110,43 +110,45 @@ const ViewMeals = () => {
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
 			/>
-			<AccordionList
-				elementList={mealsList.map((meal) => {
-					const aggregatedMacros = meal.aggregatedMacros
+			<div style={{ maxHeight: "75vh" }} className="overflow-auto">
+				<AccordionList
+					elementList={mealsList.map((meal) => {
+						const aggregatedMacros = meal.aggregatedMacros
 
-					return (
-						<AccordionListElement
-							key={meal.id}
-							headerElements={
-								<p className="fw-bold">{`${meal.title} | ${getMacrosString(
-									aggregatedMacros.calories,
-									aggregatedMacros.fats,
-									aggregatedMacros.carbs,
-									aggregatedMacros.proteins
-								)}`}</p>
-							}
-							bodyElements={
-								<div>
-									<p>Foods</p>
-									{meal.mealFoods.map((mealFood) => (
-										<MealFoodCard
-											key={mealFood.combinedId.toString()}
-											mealFood={mealFood}
-											onDeleteMealFoodClicked={handleDeleteMealFoodClicked}
-										/>
-									))}
-								</div>
-							}
-							entityId={meal.id}
-							entity={meal}
-							onEditEntityClicked={handleEditMealClicked}
-							onDeleteEntityClicked={handleDeleteMealClicked}
-						/>
-					)
-				})}
-				isLoading={isMealsListLoading}
-				error={fetchMealsListError}
-			/>
+						return (
+							<AccordionListElement
+								key={meal.id}
+								headerElements={
+									<p className="fw-bold">{`${meal.title} | ${getMacrosString(
+										aggregatedMacros.calories,
+										aggregatedMacros.fats,
+										aggregatedMacros.carbs,
+										aggregatedMacros.proteins
+									)}`}</p>
+								}
+								bodyElements={
+									<div>
+										<p>Foods</p>
+										{meal.mealFoods.map((mealFood) => (
+											<MealFoodCard
+												key={mealFood.combinedId.toString()}
+												mealFood={mealFood}
+												onDeleteMealFoodClicked={handleDeleteMealFoodClicked}
+											/>
+										))}
+									</div>
+								}
+								entityId={meal.id}
+								entity={meal}
+								onEditEntityClicked={handleEditMealClicked}
+								onDeleteEntityClicked={handleDeleteMealClicked}
+							/>
+						)
+					})}
+					isLoading={isMealsListLoading}
+					error={fetchMealsListError}
+				/>
+			</div>
 		</Container>
 	)
 }

@@ -26,10 +26,8 @@ export class FoodRepository {
 
 			const responseJson = await response.json()
 
-			const responseData = responseJson.content
-
-			for (const key in responseData) {
-				loadedFoods.push(Food.fromJSONSchema(responseData[key]))
+			for (const key in responseJson) {
+				loadedFoods.push(Food.fromJSONSchema(responseJson[key]))
 			}
 		} catch (err: any) {
 			error = err
