@@ -5,14 +5,15 @@ import { Button, Col, Container, Row } from "react-bootstrap"
 import { Food } from "../../data/food/Food"
 import { foodRepository } from "../../global/Dependencies"
 import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
-import SearchableAccordionList from "../re-useable/lists/SearchableAccordionList"
-import SearchableAccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import AccordionList from "../re-useable/lists/SearchableAccordionList"
+import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import SearchHeader from "../re-useable/misc/SearchHeader"
 
 const ViewFoods: React.FC = () => {
 	const { getAccessTokenSilently } = useAuth0()
 	const [foodsList, setFoodsList] = useState<Food[]>([])
 	const [isFoodsListLoading, setIsFoodsListLoading] = useState(true)
-	const [getFoodsListError, setGetFoodsListError] = useState<string | null>(null)
+	const [fetchFoodsListError, setFetchFoodsListError] = useState<string | null>(null)
 	const [searchQuery, setSearchQuery] = useState("")
 
 	const fetchFoods = async () => {
@@ -26,12 +27,12 @@ const ViewFoods: React.FC = () => {
 				throw response.error
 			} else {
 				setIsFoodsListLoading(false)
-				setGetFoodsListError(null)
+				setFetchFoodsListError(null)
 				setFoodsList(response.value)
 			}
 		} catch (err: any) {
 			setIsFoodsListLoading(false)
-			setGetFoodsListError(err)
+			setFetchFoodsListError(err)
 		}
 	}
 
@@ -75,7 +76,12 @@ const ViewFoods: React.FC = () => {
 					</Button>
 				</Col>
 			</Row>
-			<SearchableAccordionList
+			<SearchHeader
+				searchQuery={searchQuery}
+				onSearchQueryChange={handleSearchQueryChange}
+				onSearchClicked={handleSearchClicked}
+			/>
+			<AccordionList
 				elementList={foodsList.map((food) => {
 					const macroNutrientsString = getMacroNutrientsString(
 						food.calories,
@@ -84,7 +90,7 @@ const ViewFoods: React.FC = () => {
 						food.proteins
 					)
 					return (
-						<SearchableAccordionListElement
+						<AccordionListElement
 							key={food.id}
 							headerElements={
 								<>
@@ -108,10 +114,7 @@ const ViewFoods: React.FC = () => {
 					)
 				})}
 				isLoading={isFoodsListLoading}
-				error={getFoodsListError}
-				searchQuery={searchQuery}
-				onSearchQueryChange={handleSearchQueryChange}
-				onSearchClicked={handleSearchClicked}
+				error={fetchFoodsListError}
 			/>
 		</Container>
 	)

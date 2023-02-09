@@ -9,7 +9,7 @@ export const testMealFood1 = new MealFood(new MealFoodCombinedId(1, 0), testFood
 export const testMealFood2 = new MealFood(new MealFoodCombinedId(2, 0), testFood1, 8.0)
 export const testMealFood3 = new MealFood(new MealFoodCombinedId(1, 1), testFood2, 0.5)
 export const testMealFood4 = new MealFood(new MealFoodCombinedId(2, 1), testFood2, 1.5)
-export const testMealFood5 = new MealFood(new MealFoodCombinedId(2, 2), testFood3, 5.0)
+export const testMealFood5 = new MealFood(new MealFoodCombinedId(2, 0), testFood3, 5.0)
 export const testMeal1 = new Meal(0, "Breakfast", [testMealFood1, testMealFood3])
 export const testMeal2 = new Meal(1, "Lunch", [testMealFood5, testMealFood4])
 

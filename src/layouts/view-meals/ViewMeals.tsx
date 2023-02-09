@@ -5,9 +5,10 @@ import { Button, Col, Container, Row } from "react-bootstrap"
 import { Meal } from "../../data/meal/Meal"
 import { MealFoodCombinedId } from "../../data/meal/MealFood"
 import { mealRepository } from "../../global/Dependencies"
-import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
-import SearchableAccordionList from "../re-useable/lists/SearchableAccordionList"
-import SearchableAccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import { getMacroNutrientsString as getMacrosString } from "../../services/GetMacroNutrientsString"
+import AccordionList from "../re-useable/lists/SearchableAccordionList"
+import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import SearchHeader from "../re-useable/misc/SearchHeader"
 import MealFoodCard from "./components/MealFoodCard"
 
 const ViewMeals = () => {
@@ -15,7 +16,7 @@ const ViewMeals = () => {
 
 	const [mealsList, setMealsList] = useState<Meal[]>([])
 	const [isMealsListLoading, setIsMealsListLoading] = useState(true)
-	const [getMealsListError, setGetMealsListError] = useState<string | null>(null)
+	const [fetchMealsListError, setFetchMealsListError] = useState<string | null>(null)
 	const [searchQuery, setSearchQuery] = useState("")
 
 	const fetchMeals = async () => {
@@ -29,11 +30,11 @@ const ViewMeals = () => {
 			} else {
 				setIsMealsListLoading(false)
 				setMealsList(response.value)
-				setGetMealsListError(null)
+				setFetchMealsListError(null)
 			}
 		} catch (err: any) {
 			setIsMealsListLoading(false)
-			setGetMealsListError(err)
+			setFetchMealsListError(err)
 		}
 	}
 
@@ -79,7 +80,7 @@ const ViewMeals = () => {
 					fetchMeals()
 				}
 			} catch (err: any) {
-				setGetMealsListError(err)
+				setFetchMealsListError(err)
 			}
 		}
 	}
@@ -104,32 +105,24 @@ const ViewMeals = () => {
 					</Button>
 				</Col>
 			</Row>
-			<SearchableAccordionList
+			<SearchHeader
+				searchQuery={searchQuery}
+				onSearchQueryChange={handleSearchQueryChange}
+				onSearchClicked={handleSearchClicked}
+			/>
+			<AccordionList
 				elementList={mealsList.map((meal) => {
-					const aggregatedMacroNutrients = {
-						calories: 0,
-						fats: 0,
-						carbs: 0,
-						proteins: 0,
-					}
-
-					meal.mealFoods.forEach((mealFood) => {
-						const mealFoodMacroNutrients = mealFood.macroNutrientsForDesiredQuantity
-						aggregatedMacroNutrients.calories += mealFoodMacroNutrients.calories
-						aggregatedMacroNutrients.fats += mealFoodMacroNutrients.fats
-						aggregatedMacroNutrients.carbs += mealFoodMacroNutrients.carbs
-						aggregatedMacroNutrients.proteins += mealFoodMacroNutrients.proteins
-					})
+					const aggregatedMacros = meal.aggregatedMacros
 
 					return (
-						<SearchableAccordionListElement
+						<AccordionListElement
 							key={meal.id}
 							headerElements={
-								<p className="fw-bold">{`${meal.title} | ${getMacroNutrientsString(
-									aggregatedMacroNutrients.calories,
-									aggregatedMacroNutrients.fats,
-									aggregatedMacroNutrients.carbs,
-									aggregatedMacroNutrients.proteins
+								<p className="fw-bold">{`${meal.title} | ${getMacrosString(
+									aggregatedMacros.calories,
+									aggregatedMacros.fats,
+									aggregatedMacros.carbs,
+									aggregatedMacros.proteins
 								)}`}</p>
 							}
 							bodyElements={
@@ -139,7 +132,6 @@ const ViewMeals = () => {
 										<MealFoodCard
 											key={mealFood.combinedId.toString()}
 											mealFood={mealFood}
-											onQuantityChange={() => {}}
 											onDeleteMealFoodClicked={handleDeleteMealFoodClicked}
 										/>
 									))}
@@ -153,10 +145,7 @@ const ViewMeals = () => {
 					)
 				})}
 				isLoading={isMealsListLoading}
-				error={getMealsListError}
-				searchQuery={searchQuery}
-				onSearchQueryChange={handleSearchQueryChange}
-				onSearchClicked={handleSearchClicked}
+				error={fetchMealsListError}
 			/>
 		</Container>
 	)

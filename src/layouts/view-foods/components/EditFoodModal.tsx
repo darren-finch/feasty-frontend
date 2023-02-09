@@ -9,7 +9,7 @@ import { foodRepository } from "../../../global/Dependencies"
 import { FormSelectInput, FormSelectOption } from "../../re-useable/forms/FormSelectInput"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
-import EditEntityModal from "../../re-useable/modals/EditEntityModal"
+import EditEntityModalTemplate from "../../re-useable/modals/EditEntityModalTemplate"
 
 const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	const modal = useModal("edit-food-modal")
@@ -18,7 +18,7 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	const { getAccessTokenSilently } = useAuth0()
 
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
-	const [error, setError] = useState<string | null>("")
+	const [footerError, setFooterError] = useState<string | null>("")
 	const [fields, setFields] = useState({
 		title: {
 			value: food?.title ?? "",
@@ -88,7 +88,7 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 				modal.hide()
 			}
 		} catch (err: any) {
-			setError(err)
+			setFooterError(err)
 		}
 	}
 
@@ -101,7 +101,7 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 	}
 
 	const handleExited = () => {
-		setError(null)
+		setFooterError(null)
 		modal.remove()
 	}
 
@@ -112,19 +112,19 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 			}
 			setValidationWasAttempted(true)
 		} catch (err: any) {
-			setError(err)
+			setFooterError(err)
 		}
 	}
 
 	return (
-		<EditEntityModal
+		<EditEntityModalTemplate
 			show={modal.visible}
 			title={food == null ? "Add Food" : "Edit Food"}
-			footerErrorMsg={error}
+			footerError={footerError}
 			onExited={handleExited}
 			onClose={handleClose}
 			onSaveClicked={handleSave}>
-			{!error && (
+			{!footerError && (
 				<Form id="foodForm" noValidate onSubmit={(e) => e.preventDefault()}>
 					<Row className="mb-4">
 						<Col>
@@ -240,17 +240,17 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 					</Row>
 				</Form>
 			)}
-			{error && (
+			{footerError && (
 				<Row>
 					<Col>
-						<ErrorDisplay error={error} />
+						<ErrorDisplay error={footerError} />
 					</Col>
 					<Col>
 						<Button onClick={() => saveFood()}>Retry</Button>
 					</Col>
 				</Row>
 			)}
-		</EditEntityModal>
+		</EditEntityModalTemplate>
 	)
 })
 

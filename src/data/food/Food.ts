@@ -1,3 +1,14 @@
+export interface FoodJSONSchema {
+	id: number
+	title: string
+	quantity: number
+	unit: string
+	calories: number
+	fats: number
+	carbs: number
+	proteins: number
+}
+
 export class Food {
 	private _id: number
 
@@ -14,6 +25,32 @@ export class Food {
 	private _carbs: number
 
 	private _proteins: number
+
+	public static fromJSONSchema(jsonObj: FoodJSONSchema): Food {
+		return new Food(
+			jsonObj.id,
+			jsonObj.title,
+			jsonObj.quantity,
+			jsonObj.unit,
+			jsonObj.calories,
+			jsonObj.fats,
+			jsonObj.carbs,
+			jsonObj.proteins
+		)
+	}
+
+	public static toJSONSchema(food: Food): FoodJSONSchema {
+		return {
+			id: food._id,
+			title: food._title,
+			quantity: food._quantity,
+			unit: food._unit,
+			calories: food._calories,
+			fats: food._fats,
+			carbs: food._carbs,
+			proteins: food._proteins,
+		}
+	}
 
 	constructor(
 		id: number,

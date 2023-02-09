@@ -3,11 +3,16 @@ interface ErrorDisplayProps {
 }
 
 const ErrorDisplay: React.FC<ErrorDisplayProps> = (props) => {
-	return (
-		<div>
-			{props.error?.message ? `Error: ${props.error?.message}` : "Something went wrong. Check the error console."}
-		</div>
-	)
+	// Error may actually be an error or it could be a string
+	let finalErrorMsg = "Something went wrong. Check the error console."
+	if (props.error) {
+		if (props.error.message) {
+			finalErrorMsg = props.error.message
+		} else {
+			finalErrorMsg = props.error
+		}
+	}
+	return <p className="text-danger">{finalErrorMsg.toString()}</p>
 }
 
 export default ErrorDisplay

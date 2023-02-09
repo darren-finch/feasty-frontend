@@ -8,9 +8,10 @@ import { MealFood, MealFoodCombinedId } from "../../../data/meal/MealFood"
 import { foodRepository, mealRepository } from "../../../global/Dependencies"
 import { getMacroNutrientsString } from "../../../services/GetMacroNutrientsString"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
+import HighlightableCard from "../../re-useable/lists/HighlightableCard"
 import NoResultsDisplay from "../../re-useable/misc/NoResultsDisplay"
 import SearchHeader from "../../re-useable/misc/SearchHeader"
-import EditEntityModal from "../../re-useable/modals/EditEntityModal"
+import EditEntityModalTemplate from "../../re-useable/modals/EditEntityModalTemplate"
 import MealFoodCard from "./MealFoodCard"
 
 enum EditMealModalScreen {
@@ -225,8 +226,8 @@ const EditMealModal = NiceModal.create(() => {
 		setSearchQuery(newSearchQuery)
 	}
 
-	const handleCardClicked = (selectedFood: Food) => {
-		setSelectedFood(selectedFood)
+	const handleCardClicked = (selectedFoodId: number) => {
+		setSelectedFood(foodsList.find((food) => food.id == selectedFoodId) ?? null)
 	}
 
 	let modalTitle = ""
@@ -252,7 +253,7 @@ const EditMealModal = NiceModal.create(() => {
 	}
 
 	fields.mealFoods.value.forEach((mealFood) => {
-		const mealFoodMacroNutrients = mealFood.macroNutrientsForDesiredQuantity
+		const mealFoodMacroNutrients = mealFood.macrosForDesiredQuantity
 		aggregatedMacroNutrients.calories += mealFoodMacroNutrients.calories
 		aggregatedMacroNutrients.fats += mealFoodMacroNutrients.fats
 		aggregatedMacroNutrients.carbs += mealFoodMacroNutrients.carbs
@@ -260,12 +261,12 @@ const EditMealModal = NiceModal.create(() => {
 	})
 
 	return (
-		<EditEntityModal
+		<EditEntityModalTemplate
 			show={modal.visible}
 			title={modalTitle}
 			closeMsg={modalCloseMsg}
 			saveMsg={modalSaveMsg}
-			footerErrorMsg={footerError}
+			footerError={footerError}
 			onClose={handleClose}
 			onExited={handleExited}
 			onSaveClicked={handleSaveClicked}>
@@ -313,7 +314,6 @@ const EditMealModal = NiceModal.create(() => {
 								<MealFoodCard
 									key={mealFood.combinedId.toString()}
 									mealFood={mealFood}
-									allowQuantityChange={true}
 									onQuantityChange={handleMealFoodQuantityChange}
 									onDeleteMealFoodClicked={handleDeleteMealFoodClicked}
 								/>
@@ -334,16 +334,13 @@ const EditMealModal = NiceModal.create(() => {
 					{!isLoadingFoodsList && (
 						<div style={{ height: "25vh" }} className="my-2 overflow-auto">
 							{foodsList.map((food) => (
-								<Card
+								<HighlightableCard
 									key={food.id}
-									className={`${
-										food.id == selectedFood?.id ? "bg-primary" : ""
-									} my-2 user-select-none list-item-margin-fix card-bg-transition`}
-									style={{ cursor: "pointer" }}
-									onClick={() => handleCardClicked(food)}
-									onBlur={() => {}}>
-									<Card.Body>{food.title}</Card.Body>
-								</Card>
+									id={food.id}
+									active={food.id == selectedFood?.id}
+									title={food.title}
+									onCardClicked={handleCardClicked}
+								/>
 							))}
 						</div>
 					)}
@@ -351,7 +348,7 @@ const EditMealModal = NiceModal.create(() => {
 				</>
 			)}
 			{currentScreenValue == EditMealModalScreen.LOADING && <Spinner />}
-		</EditEntityModal>
+		</EditEntityModalTemplate>
 	)
 })
 

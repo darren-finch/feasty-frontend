@@ -4,27 +4,19 @@ import ErrorDisplay from "../misc/ErrorDisplay"
 import NoResultsDisplay from "../misc/NoResultsDisplay"
 import SearchHeader from "../misc/SearchHeader"
 
-interface SearchableAccordionListProps {
+interface AccordionListProps {
 	elementList: ReactNode[]
 	isLoading: boolean
 	error: string | null
-	searchQuery: string
-	onSearchQueryChange: (newSearchQuery: string) => void
-	onSearchClicked: () => void
 }
 
-const SearchableAccordionList: React.FC<SearchableAccordionListProps> = (props) => {
-	const { elementList, searchQuery, error, isLoading, onSearchQueryChange, onSearchClicked } = props
+const AccordionList: React.FC<AccordionListProps> = (props) => {
+	const { elementList, error, isLoading } = props
 
 	const isError = error != null && error != ""
 
 	return (
 		<div>
-			<SearchHeader
-				searchQuery={searchQuery}
-				onSearchQueryChange={onSearchQueryChange}
-				onSearchClicked={onSearchClicked}
-			/>
 			<Accordion>
 				{isLoading && <Spinner className="my-2" />}
 				{isError && (
@@ -43,4 +35,4 @@ const SearchableAccordionList: React.FC<SearchableAccordionListProps> = (props) 
 	)
 }
 
-export default SearchableAccordionList
+export default AccordionList

@@ -1,13 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { Navigate, Route, Routes } from "react-router-dom"
-import MealPlan from "./layouts/MealPlan"
 import CenteredSpinner from "./layouts/re-useable/misc/CenteredSpinner"
 import NavBar from "./layouts/re-useable/NavBar"
 import ViewFoods from "./layouts/view-foods/ViewFoods"
+import ViewMealPlan from "./layouts/view-meal-plan/ViewMealPlan"
 import ViewMeals from "./layouts/view-meals/ViewMeals"
 
 const App: React.FC = () => {
-	const { loginWithRedirect, isLoading, isAuthenticated, user } = useAuth0()
+	const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0()
 
 	if (isLoading) {
 		return <CenteredSpinner />
@@ -28,7 +28,7 @@ const App: React.FC = () => {
 					<NavBar />
 					<Routes>
 						<Route path="/" element={<Navigate replace to="/mealplan" />} />
-						<Route path="/mealplan" element={<MealPlan />} />
+						<Route path="/mealplan" element={<ViewMealPlan />} />
 						<Route path="/meals" element={<ViewMeals />} />
 						<Route path="/foods" element={<ViewFoods />} />
 					</Routes>

@@ -8,16 +8,15 @@ import FormTextInput from "../../re-useable/forms/FormTextInput"
 interface MealFoodCardProps {
 	mealFood: MealFood
 	// Will only fire when the input changes to a valid number
-	allowQuantityChange?: boolean
 	onQuantityChange?: (mealFoodId: MealFoodCombinedId, newQuantity: number) => void
-	onDeleteMealFoodClicked: (selectedMealFoodId: MealFoodCombinedId) => void
+	onDeleteMealFoodClicked?: (selectedMealFoodId: MealFoodCombinedId) => void
 }
 
 const MealFoodCard: React.FC<MealFoodCardProps> = (props) => {
-	const { mealFood, allowQuantityChange, onQuantityChange, onDeleteMealFoodClicked } = props
+	const { mealFood, onQuantityChange, onDeleteMealFoodClicked } = props
 	const [desiredQuantity, setDesiredQuantity] = useState(mealFood.desiredQuantity.toString())
 
-	const mealFoodMacroNutrients = mealFood.macroNutrientsForDesiredQuantity
+	const mealFoodMacroNutrients = mealFood.macrosForDesiredQuantity
 
 	const handleQuantityChange = (inputName: string, newInputValue: string, newInputValueIsValid: boolean) => {
 		setDesiredQuantity(newInputValue)
@@ -44,7 +43,7 @@ const MealFoodCard: React.FC<MealFoodCardProps> = (props) => {
 						</p>
 					</div>
 					<div className="d-flex align-items-center gap-2">
-						{allowQuantityChange && (
+						{onQuantityChange && (
 							<FormTextInput
 								id="0"
 								placeholder="Enter desired quantity..."
@@ -66,12 +65,14 @@ const MealFoodCard: React.FC<MealFoodCardProps> = (props) => {
 								validationWasAttempted={true}
 							/>
 						)}
-						<p>{`${!allowQuantityChange ? mealFood.desiredQuantity + " " : ""}${
-							mealFood.baseFood.unit
-						}`}</p>
-						<Button variant="outline-primary" onClick={() => onDeleteMealFoodClicked(mealFood.combinedId)}>
-							<i className="bi bi-trash"></i>
-						</Button>
+						<p>{`${!onQuantityChange ? mealFood.desiredQuantity + " " : ""}${mealFood.baseFood.unit}`}</p>
+						{onDeleteMealFoodClicked && (
+							<Button
+								variant="outline-primary"
+								onClick={() => onDeleteMealFoodClicked(mealFood.combinedId)}>
+								<i className="bi bi-trash"></i>
+							</Button>
+						)}
 					</div>
 				</div>
 			</Card.Header>

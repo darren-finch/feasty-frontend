@@ -1,19 +1,20 @@
 import React, { PropsWithChildren } from "react"
 import { Button, Modal } from "react-bootstrap"
+import ErrorDisplay from "../misc/ErrorDisplay"
 
-interface EditEntityModalProps {
+interface EditEntityModalTemplateProps {
 	show: boolean
 	title: string
 	closeMsg?: string
 	saveMsg?: string
-	footerErrorMsg?: string | null
+	footerError?: any | null
 	onExited?: () => void
 	onClose?: () => void
 	onSaveClicked?: () => void
 }
 
-const EditEntityModal: React.FC<PropsWithChildren<EditEntityModalProps>> = (props) => {
-	const { show, title, closeMsg, saveMsg, footerErrorMsg, onExited, onClose, onSaveClicked } = props
+const EditEntityModalTemplate: React.FC<PropsWithChildren<EditEntityModalTemplateProps>> = (props) => {
+	const { show, title, closeMsg, saveMsg, footerError, onExited, onClose, onSaveClicked } = props
 
 	return (
 		<Modal show={show} onExited={onExited} onHide={onClose} centered>
@@ -23,8 +24,12 @@ const EditEntityModal: React.FC<PropsWithChildren<EditEntityModalProps>> = (prop
 
 			<Modal.Body>{props.children}</Modal.Body>
 
-			<Modal.Footer>
-				{footerErrorMsg && <p className="text-danger flex-grow-1">{footerErrorMsg}</p>}
+			<Modal.Footer className="d-flex align-items-center">
+				{footerError && (
+					<div className="w-25 flex-grow-1">
+						<ErrorDisplay error={footerError} />
+					</div>
+				)}
 				<Button variant="secondary" onClick={onClose}>
 					{closeMsg ?? "Close"}
 				</Button>
@@ -36,4 +41,4 @@ const EditEntityModal: React.FC<PropsWithChildren<EditEntityModalProps>> = (prop
 	)
 }
 
-export default EditEntityModal
+export default EditEntityModalTemplate

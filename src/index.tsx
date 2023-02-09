@@ -1,7 +1,7 @@
 import "./styles/main.scss"
 import "bootstrap/dist/js/bootstrap.js"
 import "bootstrap-icons/font/bootstrap-icons.scss"
-import "./layouts/re-useable/modals/Modals"
+import "./global/Modals"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import App from "./App"

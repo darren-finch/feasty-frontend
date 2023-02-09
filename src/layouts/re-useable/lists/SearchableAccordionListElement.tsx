@@ -1,17 +1,17 @@
 import { ReactNode, useContext } from "react"
 import { Accordion, AccordionContext, Button, Card, useAccordionButton } from "react-bootstrap"
 
-interface SearchableAccordionListElementProps<T> {
+interface AccordionListElementProps<T> {
 	entityId: number
 	entity: T
 	headerElements: ReactNode | ReactNode[]
 	bodyElements: ReactNode | ReactNode[]
 	showDropdownAtLargeScreenSize?: boolean
-	onEditEntityClicked: (selectedEntity: T) => void
-	onDeleteEntityClicked: (selectedEntityId: number) => void
+	onEditEntityClicked?: (selectedEntity: T) => void
+	onDeleteEntityClicked?: (selectedEntityId: number) => void
 }
 
-const SearchableAccordionListElement = <T extends object>(props: SearchableAccordionListElementProps<T>) => {
+const AccordionListElement = <T extends object>(props: AccordionListElementProps<T>) => {
 	const {
 		entityId,
 		entity,
@@ -31,12 +31,16 @@ const SearchableAccordionListElement = <T extends object>(props: SearchableAccor
 			<Card.Header className="d-flex">
 				<div className="w-100 py-2 gap-3 gap-lg-4 d-flex align-items-center">
 					<div className="flex-grow-1">{headerElements}</div>
-					<Button onClick={() => onEditEntityClicked(entity)} variant="outline-primary">
-						<i className="bi bi-pencil-fill"></i>
-					</Button>
-					<Button onClick={() => onDeleteEntityClicked(entityId)} variant="outline-primary">
-						<i className="bi bi-trash"></i>
-					</Button>
+					{onEditEntityClicked && (
+						<Button onClick={() => onEditEntityClicked(entity)} variant="outline-primary">
+							<i className="bi bi-pencil-fill"></i>
+						</Button>
+					)}
+					{onDeleteEntityClicked && (
+						<Button onClick={() => onDeleteEntityClicked(entityId)} variant="outline-primary">
+							<i className="bi bi-trash"></i>
+						</Button>
+					)}
 					<Button
 						className={`${
 							showDropdownAtLargeScreenSize == null || showDropdownAtLargeScreenSize == true
@@ -63,4 +67,4 @@ const SearchableAccordionListElement = <T extends object>(props: SearchableAccor
 	)
 }
 
-export default SearchableAccordionListElement
+export default AccordionListElement

@@ -1,14 +1,5 @@
 @import "_overrides.scss";
 
-h1,
-h2,
-h3,
-.h1,
-.h2,
-.h3 {
-	font-family: "Caveat", sans-serif;
-}
-
 p {
 	margin-bottom: 0;
 }
@@ -85,4 +76,8 @@ body {
 
 .card-bg-transition {
 	transition: background-color 100ms;
+}
+
+.progress {
+	height: 10px;
 }

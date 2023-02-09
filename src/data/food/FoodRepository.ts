@@ -29,18 +29,7 @@ export class FoodRepository {
 			const responseData = responseJson.content
 
 			for (const key in responseData) {
-				loadedFoods.push(
-					new Food(
-						responseData[key].id,
-						responseData[key].title,
-						responseData[key].quantity,
-						responseData[key].unit,
-						responseData[key].calories,
-						responseData[key].fats,
-						responseData[key].carbs,
-						responseData[key].proteins
-					)
-				)
+				loadedFoods.push(Food.fromJSONSchema(responseData[key]))
 			}
 		} catch (err: any) {
 			error = err
@@ -54,16 +43,7 @@ export class FoodRepository {
 		let error = null
 
 		// TODO: Figure out how to NOT DO THIS
-		const foodData = {
-			id: food.id,
-			title: food.title,
-			quantity: food.quantity,
-			unit: food.unit,
-			calories: food.calories,
-			fats: food.fats,
-			carbs: food.carbs,
-			proteins: food.proteins,
-		}
+		const foodData = Food.toJSONSchema(food)
 
 		try {
 			const finalUrl = new URL(`${this._baseFoodsUrlString}`)
