@@ -9,9 +9,11 @@ import { MealPlan } from "../../data/mealplan/MealPlan"
 import { MealPlanMealCombinedId } from "../../data/mealplan/MealPlanMeal"
 import { MealPlanMetaData, MealPlanMetaDataJSONSchema } from "../../data/mealplan/MealPlanMetaData"
 import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
-import AccordionList from "../re-useable/lists/SearchableAccordionList"
-import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import AccordionList from "../re-useable/lists/AccordionList"
+import AccordionListElement from "../re-useable/lists/AccordionListElement"
+import CenteredSpinner from "../re-useable/misc/CenteredSpinner"
 import ErrorDisplay from "../re-useable/misc/ErrorDisplay"
+import SmallCenteredSpinner from "../re-useable/misc/SmallCenteredSpinner"
 import MealFoodCard from "../view-meals/components/MealFoodCard"
 
 // Needs number between 0 and 1
@@ -31,8 +33,6 @@ const getVariantForProgress = (progress: number) => {
 // And finally, only when the currently selected meal plan is deleted or a new meal plan is added will the currently selected meal plan change.
 // The currently selected meal plan is refreshed from the database every time a new meal plan meal is added or deleted.
 const ViewMealPlan: React.FC = () => {
-	const { getAccessTokenSilently } = useAuth0()
-
 	const [mealPlansMetaDataList, setMealPlansMetaDataList] = useState<MealPlanMetaDataJSONSchema[]>([])
 	const [isLoadingMealPlansMetaDataList, setIsLoadingMealPlansMetaDataList] = useState(true)
 	const [fetchMealPlansMetaDataListError, setFetchMealPlansMetaDataListError] = useState<string | null>(null)
@@ -208,7 +208,7 @@ const ViewMealPlan: React.FC = () => {
 
 	return (
 		<Container>
-			{isLoadingMealPlansMetaDataList && <Spinner />}
+			{isLoadingMealPlansMetaDataList && <CenteredSpinner />}
 			{/* Minor bug fix, this should not show when there is an error. */}
 			{!isLoadingMealPlansMetaDataList &&
 				!fetchMealPlansMetaDataListError &&
@@ -228,7 +228,7 @@ const ViewMealPlan: React.FC = () => {
 						<h2 className="my-4 text-center">Macros</h2>
 
 						<div>
-							{isLoadingSelectedMealPlan && !fetchSelectedMealPlanError && <Spinner />}
+							{isLoadingSelectedMealPlan && !fetchSelectedMealPlanError && <CenteredSpinner />}
 							{!isLoadingSelectedMealPlan && fetchSelectedMealPlanError && (
 								<ErrorDisplay error={fetchSelectedMealPlanError} />
 							)}
@@ -300,7 +300,7 @@ const ViewMealPlan: React.FC = () => {
 									<DropdownMenu>
 										{isLoadingMealPlansMetaDataList && (
 											<Dropdown.Item>
-												<Spinner size="sm" />
+												<SmallCenteredSpinner />
 											</Dropdown.Item>
 										)}
 										{!isLoadingMealPlansMetaDataList &&
@@ -341,7 +341,7 @@ const ViewMealPlan: React.FC = () => {
 									<DropdownMenu>
 										{isLoadingMealPlansMetaDataList && (
 											<Dropdown.Item>
-												<Spinner size="sm" />
+												<SmallCenteredSpinner />
 											</Dropdown.Item>
 										)}
 										{!isLoadingMealPlansMetaDataList &&
@@ -377,7 +377,7 @@ const ViewMealPlan: React.FC = () => {
 						</Row>
 
 						<div>
-							{isLoadingSelectedMealPlan && !fetchSelectedMealPlanError && <Spinner />}
+							{isLoadingSelectedMealPlan && !fetchSelectedMealPlanError && <CenteredSpinner />}
 							{!isLoadingSelectedMealPlan && fetchSelectedMealPlanError && (
 								<ErrorDisplay error={setFetchSelectedMealPlanError} />
 							)}

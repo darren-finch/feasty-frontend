@@ -1,7 +1,6 @@
-import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { useModal } from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
-import { Button, Card, Col, Row, Spinner } from "react-bootstrap"
+import { Button, Col, Row } from "react-bootstrap"
 import { foodRepository, mealRepository } from "../../../App"
 import { Food } from "../../../data/food/Food"
 import { Meal } from "../../../data/meal/Meal"
@@ -9,6 +8,7 @@ import { MealFood, MealFoodCombinedId } from "../../../data/meal/MealFood"
 import { getMacroNutrientsString } from "../../../services/GetMacroNutrientsString"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
 import HighlightableCard from "../../re-useable/lists/HighlightableCard"
+import CenteredSpinner from "../../re-useable/misc/CenteredSpinner"
 import NoResultsDisplay from "../../re-useable/misc/NoResultsDisplay"
 import SearchHeader from "../../re-useable/misc/SearchHeader"
 import EditEntityModalTemplate from "../../re-useable/modals/EditEntityModalTemplate"
@@ -21,12 +21,8 @@ enum EditMealModalScreen {
 }
 
 const EditMealModal = NiceModal.create(() => {
-	const { getAccessTokenSilently } = useAuth0()
-
 	const modal = useModal("edit-meal-modal")
 	const meal: Meal = modal.args?.meal as Meal
-
-	const [isSavingMeal, setIsSavingMeal] = useState(false)
 
 	const [currentScreenValue, setCurrentScreenValue] = useState(EditMealModalScreen.EDIT_MEAL)
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
@@ -54,7 +50,6 @@ const EditMealModal = NiceModal.create(() => {
 	const fetchFoods = async () => {
 		setIsLoadingFoodsList(true)
 		try {
-			const accessToken = await getAccessTokenSilently()
 			const response = await foodRepository.fetchFoodsByTitle(searchQuery)
 
 			if (response.error) {
@@ -87,19 +82,19 @@ const EditMealModal = NiceModal.create(() => {
 
 	const saveMeal = async () => {
 		try {
-			setIsSavingMeal(true)
+			setCurrentScreenValue(EditMealModalScreen.LOADING)
 			const newMeal = new Meal(meal?.id ?? -1, fields.title.value, fields.mealFoods.value)
 			const response = await mealRepository.saveMeal(newMeal)
 
 			if (response.error) {
 				throw response.error
 			} else {
-				setIsSavingMeal(false)
+				setCurrentScreenValue(EditMealModalScreen.EDIT_MEAL)
 				modal.resolve()
 				modal.hide()
 			}
 		} catch (err: any) {
-			setIsSavingMeal(false)
+			setCurrentScreenValue(EditMealModalScreen.EDIT_MEAL)
 			setFooterError(err)
 		}
 	}
@@ -269,7 +264,7 @@ const EditMealModal = NiceModal.create(() => {
 			title={modalTitle}
 			closeMsg={modalCloseMsg}
 			saveMsg={modalSaveMsg}
-			isLoading={isSavingMeal}
+			isLoading={currentScreenValue == EditMealModalScreen.LOADING}
 			footerError={footerError}
 			onClose={handleClose}
 			onExited={handleExited}
@@ -348,10 +343,9 @@ const EditMealModal = NiceModal.create(() => {
 							))}
 						</div>
 					)}
-					{isLoadingFoodsList && <Spinner />}
+					{isLoadingFoodsList && <CenteredSpinner />}
 				</>
 			)}
-			{currentScreenValue == EditMealModalScreen.LOADING && <Spinner />}
 		</EditEntityModalTemplate>
 	)
 })

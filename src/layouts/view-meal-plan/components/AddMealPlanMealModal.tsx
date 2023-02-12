@@ -16,11 +16,9 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 	const mealPlanId = (modal.args?.mealPlanId as number) ?? -1
 
 	const [isSavingMealPlanMeal, setIsSavingMealPlanMeal] = useState(false)
-
-	const { getAccessTokenSilently } = useAuth0()
+	const [isMealsListLoading, setIsMealsListLoading] = useState(true)
 
 	const [searchQuery, setSearchQuery] = useState("")
-	const [isMealsListLoading, setIsMealsListLoading] = useState(true)
 	const [mealsList, setMealsList] = useState<Meal[]>([])
 	const [fetchMealsListError, setFetchMealsListError] = useState<string | null>()
 	const [footerError, setFooterError] = useState<string | null>()
@@ -100,7 +98,7 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 		<EditEntityModalTemplate
 			show={modal.visible}
 			title={"Add Meal To Meal Plan"}
-			isLoading={isSavingMealPlanMeal}
+			isLoading={isSavingMealPlanMeal || isMealsListLoading}
 			footerError={footerError}
 			onClose={handleClose}
 			onExited={handleExited}
@@ -110,10 +108,9 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
 			/>
-			{isMealsListLoading && !fetchMealsListError && <Spinner />}
-			{!isMealsListLoading && fetchMealsListError && <ErrorDisplay error={fetchMealsListError} />}
-			{!isMealsListLoading && !fetchMealsListError && mealsList.length < 1 && <NoResultsDisplay />}
-			{!isMealsListLoading && !fetchMealsListError && mealsList.length > 0 && (
+			{fetchMealsListError && <ErrorDisplay error={fetchMealsListError} />}
+			{!fetchMealsListError && mealsList.length < 1 && <NoResultsDisplay />}
+			{!fetchMealsListError && mealsList.length > 0 && (
 				<div style={{ height: "25vh" }} className="my-2 overflow-auto">
 					{mealsList.map((meal) => (
 						<HighlightableCard

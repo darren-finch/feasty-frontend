@@ -5,8 +5,8 @@ import { Button, Col, Container, Row } from "react-bootstrap"
 import { foodRepository } from "../../App"
 import { Food } from "../../data/food/Food"
 import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
-import AccordionList from "../re-useable/lists/SearchableAccordionList"
-import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import AccordionList from "../re-useable/lists/AccordionList"
+import AccordionListElement from "../re-useable/lists/AccordionListElement"
 import SearchHeader from "../re-useable/misc/SearchHeader"
 
 const ViewFoods: React.FC = () => {

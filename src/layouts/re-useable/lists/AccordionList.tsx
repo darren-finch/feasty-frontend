@@ -1,8 +1,8 @@
 import { ReactNode } from "react"
-import { Accordion, Spinner } from "react-bootstrap"
+import { Accordion } from "react-bootstrap"
+import CenteredSpinner from "../misc/CenteredSpinner"
 import ErrorDisplay from "../misc/ErrorDisplay"
 import NoResultsDisplay from "../misc/NoResultsDisplay"
-import SearchHeader from "../misc/SearchHeader"
 
 interface AccordionListProps {
 	elementList: ReactNode[]
@@ -18,7 +18,7 @@ const AccordionList: React.FC<AccordionListProps> = (props) => {
 	return (
 		<div>
 			<Accordion>
-				{isLoading && <Spinner className="my-2" />}
+				{isLoading && <CenteredSpinner />}
 				{isError && (
 					<div className="my-2">
 						<ErrorDisplay error={error} />

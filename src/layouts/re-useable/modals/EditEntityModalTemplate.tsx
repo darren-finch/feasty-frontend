@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from "react"
 import { Button, Modal, Spinner } from "react-bootstrap"
+import CenteredSpinner from "../misc/CenteredSpinner"
 import ErrorDisplay from "../misc/ErrorDisplay"
 
 interface EditEntityModalTemplateProps {
@@ -23,7 +24,7 @@ const EditEntityModalTemplate: React.FC<PropsWithChildren<EditEntityModalTemplat
 				<Modal.Title>{title}</Modal.Title>
 			</Modal.Header>
 
-			{isLoading && <Spinner />}
+			{isLoading && <CenteredSpinner />}
 			{!isLoading && <Modal.Body>{props.children}</Modal.Body>}
 
 			<Modal.Footer className="d-flex align-items-center">

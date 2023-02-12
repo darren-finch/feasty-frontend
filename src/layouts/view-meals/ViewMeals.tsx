@@ -6,14 +6,12 @@ import { mealRepository } from "../../App"
 import { Meal } from "../../data/meal/Meal"
 import { MealFoodCombinedId } from "../../data/meal/MealFood"
 import { getMacroNutrientsString as getMacrosString } from "../../services/GetMacroNutrientsString"
-import AccordionList from "../re-useable/lists/SearchableAccordionList"
-import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
+import AccordionList from "../re-useable/lists/AccordionList"
+import AccordionListElement from "../re-useable/lists/AccordionListElement"
 import SearchHeader from "../re-useable/misc/SearchHeader"
 import MealFoodCard from "./components/MealFoodCard"
 
 const ViewMeals = () => {
-	const { getAccessTokenSilently } = useAuth0()
-
 	const [mealsList, setMealsList] = useState<Meal[]>([])
 	const [isMealsListLoading, setIsMealsListLoading] = useState(true)
 	const [fetchMealsListError, setFetchMealsListError] = useState<string | null>(null)

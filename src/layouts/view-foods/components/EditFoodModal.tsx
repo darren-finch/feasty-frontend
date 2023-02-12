@@ -17,8 +17,6 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 
 	const [isSavingFood, setIsSavingFood] = useState(false)
 
-	const { getAccessTokenSilently } = useAuth0()
-
 	const [validationWasAttempted, setValidationWasAttempted] = useState(false)
 	const [footerError, setFooterError] = useState<string | null>("")
 	const [fields, setFields] = useState({
