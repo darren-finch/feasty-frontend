@@ -30,7 +30,6 @@ const ViewFoods: React.FC = () => {
 				setFoodsList(response.value)
 			}
 		} catch (err: any) {
-			console.log(err.message)
 			setIsFoodsListLoading(false)
 			setFetchFoodsListError(err)
 		}

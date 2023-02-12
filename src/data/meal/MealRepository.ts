@@ -17,7 +17,7 @@ export class MealRepository {
 					: {
 							title: title,
 					  }
-			const response = await feastyAxiosInstance.get(MEALS_API_PATH)
+			const response = await feastyAxiosInstance.get(MEALS_API_PATH, { params: params })
 
 			if (!isOk(response)) {
 				throw new Error(response.statusText)
@@ -54,7 +54,6 @@ export class MealRepository {
 		return { value: id, error: error }
 	}
 
-	// TODO: Deal with foreign key constraints
 	async deleteMeal(mealId: number): Promise<RepositoryResponse<void>> {
 		let error = null
 
