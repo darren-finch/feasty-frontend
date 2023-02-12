@@ -1,15 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal from "@ebay/nice-modal-react"
-import { async } from "q"
 import { useEffect, useRef, useState } from "react"
 import { Button, Col, Container, Dropdown, ProgressBar, Row, Spinner } from "react-bootstrap"
 import DropdownMenu from "react-bootstrap/esm/DropdownMenu"
 import DropdownToggle from "react-bootstrap/esm/DropdownToggle"
-import { number } from "yargs"
+import { mealPlanMealRepository, mealPlanRepository } from "../../App"
 import { MealPlan } from "../../data/mealplan/MealPlan"
 import { MealPlanMealCombinedId } from "../../data/mealplan/MealPlanMeal"
 import { MealPlanMetaData, MealPlanMetaDataJSONSchema } from "../../data/mealplan/MealPlanMetaData"
-import { mealPlanMealRepository, mealPlanRepository } from "../../global/Dependencies"
 import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
 import AccordionList from "../re-useable/lists/SearchableAccordionList"
 import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
@@ -71,8 +69,7 @@ const ViewMealPlan: React.FC = () => {
 	const fetchMealPlansMetaDataList = async () => {
 		try {
 			setIsLoadingMealPlansMetaDataList(true)
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealPlanRepository.fetchMetaDataOfAllMealPlans(accessToken)
+			const response = await mealPlanRepository.fetchMetaDataOfAllMealPlans()
 			if (response.error) {
 				throw response.error
 			} else {
@@ -102,8 +99,7 @@ const ViewMealPlan: React.FC = () => {
 				idOfMealPlanToFetch = mealPlansMetaDataList[0].id
 			}
 			setIsLoadingSelectedMealPlan(true)
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealPlanRepository.fetchMealPlanById(idOfMealPlanToFetch, accessToken)
+			const response = await mealPlanRepository.fetchMealPlanById(idOfMealPlanToFetch)
 
 			if (response.error) {
 				throw response.error
@@ -156,8 +152,7 @@ const ViewMealPlan: React.FC = () => {
 		NiceModal.show("confirmation-modal").then(
 			async () => {
 				try {
-					const accessToken = await getAccessTokenSilently()
-					const response = await mealPlanRepository.deleteMealPlanById(mealPlanId, accessToken)
+					const response = await mealPlanRepository.deleteMealPlanById(mealPlanId)
 
 					if (response.error) {
 						throw response.error
@@ -183,8 +178,7 @@ const ViewMealPlan: React.FC = () => {
 
 	const handleDeleteMealPlanMealClicked = async (mealPlanMealId: MealPlanMealCombinedId) => {
 		try {
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealPlanMealRepository.deleteMealPlanMeal(mealPlanMealId, accessToken)
+			const response = await mealPlanMealRepository.deleteMealPlanMeal(mealPlanMealId)
 
 			if (response.error) {
 				throw response.error
@@ -215,12 +209,15 @@ const ViewMealPlan: React.FC = () => {
 	return (
 		<Container>
 			{isLoadingMealPlansMetaDataList && <Spinner />}
-			{!isLoadingMealPlansMetaDataList && mealPlansMetaDataList.length < 1 && (
-				<div className="mt-4">
-					<h5>Uh-oh, it looks like you haven't created any meal plans yet. Let's fix that!</h5>
-					<Button onClick={handleAddMealPlanClicked}>Create Meal Plan</Button>
-				</div>
-			)}
+			{/* Minor bug fix, this should not show when there is an error. */}
+			{!isLoadingMealPlansMetaDataList &&
+				!fetchMealPlansMetaDataListError &&
+				mealPlansMetaDataList.length < 1 && (
+					<div className="mt-4">
+						<h5>Uh-oh, it looks like you haven't created any meal plans yet. Let's fix that!</h5>
+						<Button onClick={handleAddMealPlanClicked}>Create Meal Plan</Button>
+					</div>
+				)}
 			{!isLoadingMealPlansMetaDataList && fetchMealPlansMetaDataListError && (
 				<ErrorDisplay error={fetchMealPlansMetaDataListError} />
 			)}

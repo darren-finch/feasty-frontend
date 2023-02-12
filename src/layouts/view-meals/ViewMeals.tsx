@@ -2,9 +2,9 @@ import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
+import { mealRepository } from "../../App"
 import { Meal } from "../../data/meal/Meal"
 import { MealFoodCombinedId } from "../../data/meal/MealFood"
-import { mealRepository } from "../../global/Dependencies"
 import { getMacroNutrientsString as getMacrosString } from "../../services/GetMacroNutrientsString"
 import AccordionList from "../re-useable/lists/SearchableAccordionList"
 import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
@@ -22,8 +22,7 @@ const ViewMeals = () => {
 	const fetchMeals = async () => {
 		setIsMealsListLoading(true)
 		try {
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealRepository.fetchMealsByTitle(searchQuery, accessToken)
+			const response = await mealRepository.fetchMealsByTitle(searchQuery)
 
 			if (response.error) {
 				throw response.error
@@ -58,9 +57,7 @@ const ViewMeals = () => {
 			mainMsg: "This will remove this meal from all meal plans that reference it.",
 		}).then(
 			async () => {
-				setIsMealsListLoading(true)
-				const accessToken = await getAccessTokenSilently()
-				await mealRepository.deleteMeal(selectedMealId, accessToken)
+				await mealRepository.deleteMeal(selectedMealId)
 				fetchMeals()
 			},
 			() => {}
@@ -78,8 +75,7 @@ const ViewMeals = () => {
 			)
 
 			try {
-				const accessToken = await getAccessTokenSilently()
-				const response = await mealRepository.saveMeal(newMeal, accessToken)
+				const response = await mealRepository.saveMeal(newMeal)
 
 				if (response.error) {
 					throw response.error

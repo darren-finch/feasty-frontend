@@ -1,33 +1,32 @@
+import { feastyAxiosInstance } from "../../App"
+import { isOk } from "../../util/GeneralUtils"
 import { RepositoryResponse } from "../RepositoryResponse"
 import { Food } from "./Food"
 
+const FOODS_API_PATH = "/foods"
+
 export class FoodRepository {
-	private _baseFoodsUrlString = process.env.REACT_APP_API_SERVER_URL + "/api/foods"
-
-	async fetchFoodsByTitle(title: string, accessToken: string): Promise<RepositoryResponse<Food[]>> {
-		const finalFoodsUrl = new URL(this._baseFoodsUrlString)
-		if (title != "") {
-			finalFoodsUrl.searchParams.append("title", title)
-		}
-
+	async fetchFoodsByTitle(title: string): Promise<RepositoryResponse<Food[]>> {
 		const loadedFoods: Food[] = []
 		let error = null
 
 		try {
-			const response = await fetch(finalFoodsUrl, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
+			const params =
+				title == ""
+					? null
+					: {
+							title: title,
+					  }
+			const response = await feastyAxiosInstance.get(FOODS_API_PATH, {
+				params: params,
 			})
 
-			if (!response.ok) {
-				throw new Error(response.statusText)
+			if (!isOk(response)) {
+				throw Error(response.statusText)
 			}
 
-			const responseJson = await response.json()
-
-			for (const key in responseJson) {
-				loadedFoods.push(Food.fromJSONSchema(responseJson[key]))
+			for (const key in response.data) {
+				loadedFoods.push(Food.fromJSONSchema(response.data[key]))
 			}
 		} catch (err: any) {
 			error = err
@@ -36,27 +35,17 @@ export class FoodRepository {
 		return { value: loadedFoods, error: error }
 	}
 
-	async saveFood(food: Food, accessToken: string): Promise<RepositoryResponse<number>> {
+	async saveFood(food: Food): Promise<RepositoryResponse<number>> {
 		let id = -1
 		let error = null
 
-		// TODO: Figure out how to NOT DO THIS
 		const foodData = Food.toJSONSchema(food)
 
 		try {
-			const finalUrl = new URL(`${this._baseFoodsUrlString}`)
-			const response = await fetch(finalUrl, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
-				body: JSON.stringify(foodData),
-			})
+			const response = await feastyAxiosInstance.put(FOODS_API_PATH, JSON.stringify(foodData))
 
-			if (response.ok) {
-				const responseJson = await response.json()
-				id = responseJson.id
+			if (isOk(response)) {
+				id = response.data.id
 			} else {
 				throw new Error(response.statusText)
 			}
@@ -67,20 +56,13 @@ export class FoodRepository {
 		return { value: id, error: error }
 	}
 
-	async deleteFood(foodId: number, accessToken: string): Promise<RepositoryResponse<void>> {
+	async deleteFood(foodId: number): Promise<RepositoryResponse<void>> {
 		let error = null
 
 		try {
-			const finalUrl = new URL(`${this._baseFoodsUrlString}/${foodId.toString()}`)
-			const response = await fetch(finalUrl, {
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
-			})
+			const response = await feastyAxiosInstance.delete(FOODS_API_PATH + `/${foodId}`)
 
-			if (!response.ok) {
+			if (!isOk(response)) {
 				throw new Error(response.statusText)
 			}
 		} catch (err: any) {

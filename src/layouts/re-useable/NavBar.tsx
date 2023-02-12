@@ -7,6 +7,10 @@ const NavBar: React.FC = () => {
 	const { logout, user } = useAuth0()
 	const [navbarOpen, setNavBarOpen] = React.useState<boolean>(false)
 
+	const handleLogout = () => {
+		logout({ clientId: process.env.REACT_APP_AUTH0_CLIENT_ID, logoutParams: { returnTo: window.location.origin } })
+	}
+
 	return (
 		<Navbar bg="light" expand="lg">
 			<Container>
@@ -21,7 +25,7 @@ const NavBar: React.FC = () => {
 							src={user?.picture}
 							alt="Profile picture"
 						/>
-						<Button onClick={() => logout()}>Log Out</Button>
+						<Button onClick={handleLogout}>Log Out</Button>
 					</div>
 				</div>
 				{/* Using vanilla bootstrap button here because of the custom styling we are doing. */}
@@ -64,7 +68,7 @@ const NavBar: React.FC = () => {
 								src={user?.picture}
 								alt="Profile picture"
 							/>
-							<Button onClick={() => logout()}>Log Out</Button>
+							<Button onClick={handleLogout}>Log Out</Button>
 						</div>
 					</div>
 				</Navbar.Collapse>

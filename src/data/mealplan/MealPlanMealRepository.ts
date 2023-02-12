@@ -1,32 +1,22 @@
+import { feastyAxiosInstance } from "../../App"
+import { isOk } from "../../util/GeneralUtils"
 import { RepositoryResponse } from "../RepositoryResponse"
 import { MealPlanMeal, MealPlanMealCombinedId } from "./MealPlanMeal"
 
-export class MealPlanMealRepository {
-	private _baseMealPlanMealsUrlString = process.env.REACT_APP_API_SERVER_URL + "/api/mealplanmeals"
+const MEAL_PLAN_MEAL_API_PATH = "/mealplanmeals"
 
-	async saveMealPlanMeal(
-		mealPlanMeal: MealPlanMeal,
-		accessToken: string
-	): Promise<RepositoryResponse<MealPlanMealCombinedId>> {
+export class MealPlanMealRepository {
+	async saveMealPlanMeal(mealPlanMeal: MealPlanMeal): Promise<RepositoryResponse<MealPlanMealCombinedId>> {
 		let id = new MealPlanMealCombinedId(-1, -1)
 		let error = null
 
 		const mealPlanMealData = MealPlanMeal.toJSONSchema(mealPlanMeal)
 
 		try {
-			const finalUrl = new URL(`${this._baseMealPlanMealsUrlString}`)
-			const response = await fetch(finalUrl, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
-				body: JSON.stringify(mealPlanMealData),
-			})
+			const response = await feastyAxiosInstance.put(MEAL_PLAN_MEAL_API_PATH, JSON.stringify(mealPlanMealData))
 
-			if (response.ok) {
-				const responseJson = await response.json()
-				id = MealPlanMealCombinedId.fromJSONSchema(responseJson)
+			if (isOk(response)) {
+				id = MealPlanMealCombinedId.fromJSONSchema(response.data)
 			} else {
 				throw new Error(response.statusText)
 			}
@@ -37,24 +27,15 @@ export class MealPlanMealRepository {
 		return { value: id, error: error }
 	}
 
-	async deleteMealPlanMeal(
-		combinedId: MealPlanMealCombinedId,
-		accessToken: string
-	): Promise<RepositoryResponse<void>> {
+	async deleteMealPlanMeal(combinedId: MealPlanMealCombinedId): Promise<RepositoryResponse<void>> {
 		let error = null
 
 		try {
-			const finalUrl = new URL(`${this._baseMealPlanMealsUrlString}`)
-			const response = await fetch(finalUrl, {
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
-				body: `${JSON.stringify(MealPlanMealCombinedId.toJSONSchema(combinedId))}`,
+			const response = await feastyAxiosInstance(MEAL_PLAN_MEAL_API_PATH, {
+				data: JSON.stringify(MealPlanMealCombinedId.toJSONSchema(combinedId)),
 			})
 
-			if (!response.ok) {
+			if (!isOk(response)) {
 				throw new Error(response.statusText)
 			}
 		} catch (err: any) {

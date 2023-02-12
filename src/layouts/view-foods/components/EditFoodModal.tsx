@@ -2,10 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { NiceModalHocProps, useModal } from "@ebay/nice-modal-react"
 import { useState } from "react"
 import { Button, Col, Form, Row } from "react-bootstrap"
-import { POSITIVE_FLOAT_PATTERN, POSITIVE_INT_PATTERN } from "../../../constants"
+import { foodRepository } from "../../../App"
+import { POSITIVE_FLOAT_PATTERN, POSITIVE_INT_PATTERN } from "../../../global/constants"
 import { Food } from "../../../data/food/Food"
 import { measurementUnits } from "../../../data/food/MeasurementUnits"
-import { foodRepository } from "../../../global/Dependencies"
 import { FormSelectInput, FormSelectOption } from "../../re-useable/forms/FormSelectInput"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
@@ -81,8 +81,7 @@ const EditFoodModal = NiceModal.create<NiceModalHocProps>(() => {
 				Number.parseInt(fields.proteins.value)
 			)
 
-			const accessToken = await getAccessTokenSilently()
-			const response = await foodRepository.saveFood(foodToSave, accessToken)
+			const response = await foodRepository.saveFood(foodToSave)
 
 			if (response.error) {
 				throw response.error

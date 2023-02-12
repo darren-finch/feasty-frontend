@@ -2,9 +2,9 @@ import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { NiceModalHocProps, useModal } from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
 import { Spinner } from "react-bootstrap"
+import { mealPlanMealRepository, mealRepository } from "../../../App"
 import { Meal } from "../../../data/meal/Meal"
 import { MealPlanMeal, MealPlanMealCombinedId } from "../../../data/mealplan/MealPlanMeal"
-import { mealPlanMealRepository, mealRepository } from "../../../global/Dependencies"
 import HighlightableCard from "../../re-useable/lists/HighlightableCard"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
 import NoResultsDisplay from "../../re-useable/misc/NoResultsDisplay"
@@ -34,8 +34,7 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 	const fetchMeals = async () => {
 		setIsMealsListLoading(true)
 		try {
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealRepository.fetchMealsByTitle(searchQuery, accessToken)
+			const response = await mealRepository.fetchMealsByTitle(searchQuery)
 			if (response.error) {
 				throw response.error
 			} else {
@@ -67,8 +66,7 @@ const AddMealPlanMealModal = NiceModal.create<NiceModalHocProps>(() => {
 					selectedMeal
 				)
 
-				const accessToken = await getAccessTokenSilently()
-				const response = await mealPlanMealRepository.saveMealPlanMeal(newMealPlanMeal, accessToken)
+				const response = await mealPlanMealRepository.saveMealPlanMeal(newMealPlanMeal)
 
 				if (response.error) {
 					throw response.error

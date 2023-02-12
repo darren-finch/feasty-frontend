@@ -2,8 +2,8 @@ import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
+import { foodRepository } from "../../App"
 import { Food } from "../../data/food/Food"
-import { foodRepository } from "../../global/Dependencies"
 import { getMacroNutrientsString } from "../../services/GetMacroNutrientsString"
 import AccordionList from "../re-useable/lists/SearchableAccordionList"
 import AccordionListElement from "../re-useable/lists/SearchableAccordionListElement"
@@ -20,8 +20,7 @@ const ViewFoods: React.FC = () => {
 		setIsFoodsListLoading(true)
 
 		try {
-			const accessToken = await getAccessTokenSilently()
-			const response = await foodRepository.fetchFoodsByTitle(searchQuery, accessToken)
+			const response = await foodRepository.fetchFoodsByTitle(searchQuery)
 
 			if (response.error) {
 				throw response.error
@@ -31,6 +30,7 @@ const ViewFoods: React.FC = () => {
 				setFoodsList(response.value)
 			}
 		} catch (err: any) {
+			console.log(err.message)
 			setIsFoodsListLoading(false)
 			setFetchFoodsListError(err)
 		}
@@ -59,9 +59,7 @@ const ViewFoods: React.FC = () => {
 			mainMsg: "This will remove this food from all meals that reference it.",
 		}).then(
 			async () => {
-				setIsFoodsListLoading(true)
-				const accessToken = await getAccessTokenSilently()
-				await foodRepository.deleteFood(selectedFoodId, accessToken)
+				await foodRepository.deleteFood(selectedFoodId)
 				fetchFoods()
 			},
 			() => {}

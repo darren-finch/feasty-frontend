@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Button, Card, Col, Row } from "react-bootstrap"
-import { POSITIVE_FLOAT_PATTERN } from "../../../constants"
+import { POSITIVE_FLOAT_PATTERN } from "../../../global/constants"
 import { MealFood, MealFoodCombinedId } from "../../../data/meal/MealFood"
 import { getMacroNutrientsString } from "../../../services/GetMacroNutrientsString"
 import FormTextInput from "../../re-useable/forms/FormTextInput"

@@ -2,9 +2,9 @@ import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { useModal } from "@ebay/nice-modal-react"
 import { useState } from "react"
 import { Button, Col, Form, Row } from "react-bootstrap"
-import { POSITIVE_INT_PATTERN } from "../../../constants"
+import { mealPlanRepository } from "../../../App"
+import { POSITIVE_INT_PATTERN } from "../../../global/constants"
 import { MealPlanMetaData } from "../../../data/mealplan/MealPlanMetaData"
-import { mealPlanRepository } from "../../../global/Dependencies"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
 import ErrorDisplay from "../../re-useable/misc/ErrorDisplay"
 import EditEntityModalTemplate from "../../re-useable/modals/EditEntityModalTemplate"
@@ -68,8 +68,7 @@ const EditMealPlanMetaDataModal = NiceModal.create(() => {
 				Number.parseFloat(fields.desiredCarbs.value),
 				Number.parseFloat(fields.desiredProteins.value)
 			)
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealPlanRepository.saveMealPlanMetaData(mealPlanMetaDataToSave, accessToken)
+			const response = await mealPlanRepository.saveMealPlanMetaData(mealPlanMetaDataToSave)
 
 			if (response.error) {
 				throw response.error

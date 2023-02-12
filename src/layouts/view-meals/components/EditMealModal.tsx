@@ -2,10 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { useModal } from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
 import { Button, Card, Col, Row, Spinner } from "react-bootstrap"
+import { foodRepository, mealRepository } from "../../../App"
 import { Food } from "../../../data/food/Food"
 import { Meal } from "../../../data/meal/Meal"
 import { MealFood, MealFoodCombinedId } from "../../../data/meal/MealFood"
-import { foodRepository, mealRepository } from "../../../global/Dependencies"
 import { getMacroNutrientsString } from "../../../services/GetMacroNutrientsString"
 import FormTextInput from "../../re-useable/forms/FormTextInput"
 import HighlightableCard from "../../re-useable/lists/HighlightableCard"
@@ -55,7 +55,7 @@ const EditMealModal = NiceModal.create(() => {
 		setIsLoadingFoodsList(true)
 		try {
 			const accessToken = await getAccessTokenSilently()
-			const response = await foodRepository.fetchFoodsByTitle(searchQuery, accessToken)
+			const response = await foodRepository.fetchFoodsByTitle(searchQuery)
 
 			if (response.error) {
 				throw response.error
@@ -89,8 +89,7 @@ const EditMealModal = NiceModal.create(() => {
 		try {
 			setIsSavingMeal(true)
 			const newMeal = new Meal(meal?.id ?? -1, fields.title.value, fields.mealFoods.value)
-			const accessToken = await getAccessTokenSilently()
-			const response = await mealRepository.saveMeal(newMeal, accessToken)
+			const response = await mealRepository.saveMeal(newMeal)
 
 			if (response.error) {
 				throw response.error
