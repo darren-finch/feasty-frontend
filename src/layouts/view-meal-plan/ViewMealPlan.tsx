@@ -389,7 +389,7 @@ const ViewMealPlan: React.FC = () => {
 										</Button>
 									</div>
 
-									<div style={{ maxHeight: "75vh" }} className="overflow-auto">
+									<div style={{ maxHeight: "75vh" }} className="mb-4 overflow-auto">
 										<AccordionList
 											elementList={selectedMealPlan?.mealPlanMeals.map((mealPlanMeal) => {
 												const aggregatedMacros = mealPlanMeal.meal.aggregatedMacros

@@ -17,7 +17,10 @@ const AccordionList: React.FC<AccordionListProps> = (props) => {
 
 	return (
 		<div>
-			<Accordion>
+			<Accordion
+				onScroll={(e) => {
+					e.stopPropagation()
+				}}>
 				{isLoading && <CenteredSpinner />}
 				{isError && (
 					<div className="my-2">

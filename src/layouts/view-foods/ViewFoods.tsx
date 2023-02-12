@@ -86,7 +86,7 @@ const ViewFoods: React.FC = () => {
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
 			/>
-			<div style={{ maxHeight: "75vh" }} className="overflow-auto">
+			<div style={{ maxHeight: "75vh" }} className="mb-4 overflow-auto">
 				<AccordionList
 					elementList={foodsList.map((food) => {
 						const macroNutrientsString = getMacroNutrientsString(
