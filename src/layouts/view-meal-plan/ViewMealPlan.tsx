@@ -1,7 +1,6 @@
-import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal from "@ebay/nice-modal-react"
 import { useEffect, useRef, useState } from "react"
-import { Button, Col, Container, Dropdown, ProgressBar, Row, Spinner } from "react-bootstrap"
+import { Button, Col, Container, Dropdown, ProgressBar, Row } from "react-bootstrap"
 import DropdownMenu from "react-bootstrap/esm/DropdownMenu"
 import DropdownToggle from "react-bootstrap/esm/DropdownToggle"
 import { mealPlanMealRepository, mealPlanRepository } from "../../App"

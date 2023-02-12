@@ -6,17 +6,42 @@ import ErrorDisplay from "../misc/ErrorDisplay"
 interface EditEntityModalTemplateProps {
 	show: boolean
 	title: string
-	closeMsg?: string
-	saveMsg?: string
 	isLoading?: boolean
 	footerError?: any | null
-	onExited?: () => void
+	closeMsg?: string
+	saveMsg?: string
+	// These default to true
+	disableCancelWhileLoading?: boolean
+	disableSaveWhileLoading?: boolean
+	disableCancelWhileError?: boolean
+	disableSaveWhileError?: boolean
 	onClose?: () => void
 	onSaveClicked?: () => void
+	onExited?: () => void
 }
 
 const EditEntityModalTemplate: React.FC<PropsWithChildren<EditEntityModalTemplateProps>> = (props) => {
-	const { show, title, closeMsg, saveMsg, isLoading, footerError, onExited, onClose, onSaveClicked } = props
+	const {
+		show,
+		title,
+		closeMsg,
+		saveMsg,
+		isLoading,
+		footerError,
+		onExited,
+		onClose,
+		onSaveClicked,
+		disableCancelWhileLoading,
+		disableSaveWhileLoading,
+		disableCancelWhileError,
+		disableSaveWhileError,
+	} = props
+
+	const closeButtonIsDisabled =
+		((disableCancelWhileLoading ?? true) && isLoading) || ((disableCancelWhileError ?? true) && footerError)
+
+	const saveButtonIsDisabled =
+		((disableSaveWhileLoading ?? true) && isLoading) || ((disableSaveWhileLoading ?? true) && footerError)
 
 	return (
 		<Modal show={show} onExited={onExited} onHide={onClose} centered>
@@ -33,10 +58,10 @@ const EditEntityModalTemplate: React.FC<PropsWithChildren<EditEntityModalTemplat
 						<ErrorDisplay error={footerError} />
 					</div>
 				)}
-				<Button variant="secondary" onClick={onClose}>
+				<Button variant="secondary" onClick={onClose} disabled={closeButtonIsDisabled}>
 					{closeMsg ?? "Close"}
 				</Button>
-				<Button variant="primary" onClick={onSaveClicked}>
+				<Button variant="primary" onClick={onSaveClicked} disabled={saveButtonIsDisabled}>
 					{saveMsg ?? "Save Changes"}
 				</Button>
 			</Modal.Footer>

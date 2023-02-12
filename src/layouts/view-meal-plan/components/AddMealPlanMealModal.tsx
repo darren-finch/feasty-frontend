@@ -1,7 +1,5 @@
-import { useAuth0 } from "@auth0/auth0-react"
 import NiceModal, { NiceModalHocProps, useModal } from "@ebay/nice-modal-react"
 import { useEffect, useState } from "react"
-import { Spinner } from "react-bootstrap"
 import { mealPlanMealRepository, mealRepository } from "../../../App"
 import { Meal } from "../../../data/meal/Meal"
 import { MealPlanMeal, MealPlanMealCombinedId } from "../../../data/mealplan/MealPlanMeal"

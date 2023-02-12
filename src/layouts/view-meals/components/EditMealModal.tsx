@@ -225,6 +225,7 @@ const EditMealModal = NiceModal.create(() => {
 	}
 
 	const handleCardClicked = (selectedFoodId: number) => {
+		setFooterError(null)
 		setSelectedFood(foodsList.find((food) => food.id == selectedFoodId) ?? null)
 	}
 
