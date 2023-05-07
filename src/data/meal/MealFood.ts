@@ -11,17 +11,6 @@ export class MealFoodCombinedId {
 	private _mealId: number
 	private _foodId: number
 
-	public static fromJSONSchema(mealFoodCombinedIdJSONSchema: MealFoodCombinedIdJSONSchema): MealFoodCombinedId {
-		return new MealFoodCombinedId(mealFoodCombinedIdJSONSchema.mealId, mealFoodCombinedIdJSONSchema.foodId)
-	}
-
-	public static toJSONSchema(mealFoodCombinedId: MealFoodCombinedId): MealFoodCombinedIdJSONSchema {
-		return {
-			mealId: mealFoodCombinedId.mealId,
-			foodId: mealFoodCombinedId.foodId,
-		}
-	}
-
 	constructor(mealId: number, foodId: number) {
 		this._mealId = mealId
 		this._foodId = foodId
@@ -41,7 +30,8 @@ export class MealFoodCombinedId {
 }
 
 export interface MealFoodJSONSchema {
-	combinedId: MealFoodCombinedIdJSONSchema
+	mealId: number
+	foodId: number
 	baseFood: FoodJSONSchema
 	desiredQuantity: number
 }
@@ -55,7 +45,7 @@ export class MealFood {
 
 	public static fromJSONSchema(mealFoodJSONSchema: MealFoodJSONSchema) {
 		return new MealFood(
-			MealFoodCombinedId.fromJSONSchema(mealFoodJSONSchema.combinedId),
+			new MealFoodCombinedId(mealFoodJSONSchema.mealId, mealFoodJSONSchema.foodId),
 			Food.fromJSONSchema(mealFoodJSONSchema.baseFood),
 			mealFoodJSONSchema.desiredQuantity
 		)
@@ -63,7 +53,8 @@ export class MealFood {
 
 	public static toJSONSchema(mealFood: MealFood): MealFoodJSONSchema {
 		return {
-			combinedId: MealFoodCombinedId.toJSONSchema(mealFood.combinedId),
+			mealId: mealFood.combinedId.mealId,
+			foodId: mealFood.combinedId.foodId,
 			baseFood: Food.toJSONSchema(mealFood.baseFood),
 			desiredQuantity: mealFood.desiredQuantity,
 		}

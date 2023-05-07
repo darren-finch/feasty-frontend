@@ -44,7 +44,8 @@ export class MealPlanMealCombinedId {
 }
 
 export interface MealPlanMealJSONSchema {
-	combinedId: MealPlanMealCombinedIdJSONSchema
+	mealId: number
+	mealPlanId: number
 	meal: MealJSONSchema
 }
 
@@ -55,14 +56,15 @@ export class MealPlanMeal {
 
 	public static fromJSONSchema(mealPlanMealJSONSchema: MealPlanMealJSONSchema): MealPlanMeal {
 		return new MealPlanMeal(
-			MealPlanMealCombinedId.fromJSONSchema(mealPlanMealJSONSchema.combinedId),
+			new MealPlanMealCombinedId(mealPlanMealJSONSchema.mealPlanId, mealPlanMealJSONSchema.mealId),
 			Meal.fromJSONSchema(mealPlanMealJSONSchema.meal)
 		)
 	}
 
 	public static toJSONSchema(mealPlanMeal: MealPlanMeal): MealPlanMealJSONSchema {
 		return {
-			combinedId: MealPlanMealCombinedId.toJSONSchema(mealPlanMeal.combinedId),
+			mealId: mealPlanMeal.combinedId.mealId,
+			mealPlanId: mealPlanMeal.combinedId.mealPlanId,
 			meal: Meal.toJSONSchema(mealPlanMeal.meal),
 		}
 	}

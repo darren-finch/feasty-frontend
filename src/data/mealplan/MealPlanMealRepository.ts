@@ -32,7 +32,10 @@ export class MealPlanMealRepository {
 
 		try {
 			const response = await feastyAxiosInstance.delete(MEAL_PLAN_MEAL_API_PATH, {
-				data: JSON.stringify(MealPlanMealCombinedId.toJSONSchema(combinedId)),
+				params: {
+					mealId: combinedId.mealId,
+					mealPlanId: combinedId.mealPlanId,
+				},
 			})
 
 			if (!isOk(response)) {
