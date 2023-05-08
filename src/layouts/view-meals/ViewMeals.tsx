@@ -95,7 +95,7 @@ const ViewMeals = () => {
 	}
 
 	return (
-		<Container>
+		<Container className="d-flex flex-column h-100 overflow-auto">
 			<Row className="my-4">
 				<Col className="d-flex align-items-center justify-content-start">
 					<h1>Meals</h1>
@@ -111,7 +111,7 @@ const ViewMeals = () => {
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
 			/>
-			<div style={{ maxHeight: "75vh" }} className="mb-4 overflow-auto">
+			<div className="mb-4 overflow-auto">
 				<AccordionList
 					elementList={mealsList.map((meal) => {
 						const aggregatedMacros = meal.aggregatedMacros

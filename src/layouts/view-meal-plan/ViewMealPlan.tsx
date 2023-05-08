@@ -206,7 +206,7 @@ const ViewMealPlan: React.FC = () => {
 	})
 
 	return (
-		<Container>
+		<Container className="d-flex flex-column h-100 overflow-auto">
 			{isLoadingMealPlansMetaDataList && <CenteredSpinner />}
 			{/* Minor bug fix, this should not show when there is an error. */}
 			{!isLoadingMealPlansMetaDataList &&
@@ -224,7 +224,7 @@ const ViewMealPlan: React.FC = () => {
 				!fetchMealPlansMetaDataListError &&
 				mealPlansMetaDataList.length > 0 && (
 					<>
-						<h2 className="my-4 text-center">Macros</h2>
+						<h2 className="my-2 text-center">Macros</h2>
 
 						<div>
 							{isLoadingSelectedMealPlan && !fetchSelectedMealPlanError && <CenteredSpinner />}
@@ -232,7 +232,7 @@ const ViewMealPlan: React.FC = () => {
 								<ErrorDisplay error={fetchSelectedMealPlanError} />
 							)}
 							{!isLoadingSelectedMealPlan && selectedMealPlan && (
-								<Row className="my-4 row-cols-2 row-cols-lg-4 gy-4">
+								<Row className="my-2 row-cols-2 row-cols-lg-4 gy-2">
 									<Col>
 										<ProgressBar
 											now={(aggregatedMacros.calories / selectedMealPlan.requiredCalories) * 100}
@@ -244,7 +244,7 @@ const ViewMealPlan: React.FC = () => {
 											{Math.round(aggregatedMacros.calories)}/
 											{Math.round(selectedMealPlan.requiredCalories)}
 										</p>
-										<h4 className="mt-2 text-center">Calories</h4>
+										<p className="mt-1 text-center">Calories</p>
 									</Col>
 									<Col>
 										<ProgressBar
@@ -257,7 +257,7 @@ const ViewMealPlan: React.FC = () => {
 											{Math.round(aggregatedMacros.fats)}/
 											{Math.round(selectedMealPlan.requiredFats)}
 										</p>
-										<h4 className="mt-2 text-center">Fats</h4>
+										<p className="mt-1 text-center">Fats</p>
 									</Col>
 									<Col>
 										<ProgressBar
@@ -270,7 +270,7 @@ const ViewMealPlan: React.FC = () => {
 											{Math.round(aggregatedMacros.carbs)}/
 											{Math.round(selectedMealPlan.requiredCarbs)}
 										</p>
-										<h4 className="mt-2 text-center">Carbs</h4>
+										<p className="mt-1 text-center">Carbs</p>
 									</Col>
 									<Col>
 										<ProgressBar
@@ -283,15 +283,15 @@ const ViewMealPlan: React.FC = () => {
 											{Math.round(aggregatedMacros.proteins)}/
 											{Math.round(selectedMealPlan.requiredProteins)}
 										</p>
-										<h4 className="mt-2 text-center">Proteins</h4>
+										<p className="mt-1 text-center">Proteins</p>
 									</Col>
 								</Row>
 							)}
 						</div>
 
-						<Row className="my-4 row-cols-1 row-cols-md-2 gy-2">
+						<Row className="my-2 row-cols-1 row-cols-md-2 gy-2">
 							<Col className="d-flex align-items-center gap-2">
-								<h5 className="mb-0 flex-grow-1">Selected Meal Plan</h5>
+								<p className="mb-0 flex-grow-1">Selected Meal Plan</p>
 								<Dropdown className="d-md-none">
 									<DropdownToggle id="meal-plan-dropdown">
 										{selectedMealPlan?.title ?? "Select Meal Plan"}
@@ -375,21 +375,21 @@ const ViewMealPlan: React.FC = () => {
 							</Col>
 						</Row>
 
-						<div>
+						<>
 							{isLoadingSelectedMealPlan && !fetchSelectedMealPlanError && <CenteredSpinner />}
 							{!isLoadingSelectedMealPlan && fetchSelectedMealPlanError && (
 								<ErrorDisplay error={setFetchSelectedMealPlanError} />
 							)}
 							{!isLoadingSelectedMealPlan && selectedMealPlan && (
 								<>
-									<div className="d-flex align-items-center gap-4">
-										<h5 className="mb-0 flex-grow-1">Meals</h5>
+									<div className="d-flex align-items-center gap-4 mb-2">
+										<p className="mb-0 flex-grow-1">Meals</p>
 										<Button onClick={handleAddMealPlanMealClicked}>
 											<i className="bi bi-plus-lg"></i>
 										</Button>
 									</div>
 
-									<div style={{ maxHeight: "75vh" }} className="mb-4 overflow-auto">
+									<div className="mb-4">
 										<AccordionList
 											elementList={selectedMealPlan?.mealPlanMeals.map((mealPlanMeal) => {
 												const aggregatedMacros = mealPlanMeal.meal.aggregatedMacros
@@ -432,7 +432,7 @@ const ViewMealPlan: React.FC = () => {
 									</div>
 								</>
 							)}
-						</div>
+						</>
 					</>
 				)}
 		</Container>

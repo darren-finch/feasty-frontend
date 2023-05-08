@@ -10,6 +10,7 @@ import NavBar from "./layouts/re-useable/NavBar"
 import ViewFoods from "./layouts/view-foods/ViewFoods"
 import ViewMealPlan from "./layouts/view-meal-plan/ViewMealPlan"
 import ViewMeals from "./layouts/view-meals/ViewMeals"
+import Footer from "./layouts/re-useable/Footer"
 
 export const feastyAxiosInstance = axios.create({
 	baseURL: process.env.REACT_APP_API_SERVER_URL + "/api",
@@ -57,7 +58,7 @@ const App: React.FC = () => {
 	return (
 		<>
 			{isAuthenticated && (
-				<>
+				<div className="d-flex flex-column" style={{ height: "100vh" }}>
 					<NavBar />
 					<Routes>
 						<Route path="/" element={<Navigate replace to="/mealplan" />} />
@@ -65,7 +66,9 @@ const App: React.FC = () => {
 						<Route path="/meals" element={<ViewMeals />} />
 						<Route path="/foods" element={<ViewFoods />} />
 					</Routes>
-				</>
+					<div className="flex-grow-1"></div>
+					<Footer />
+				</div>
 			)}
 		</>
 	)

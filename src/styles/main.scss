@@ -1,5 +1,11 @@
 @import "_overrides.scss";
 
+html,
+body,
+#root {
+	height: 100vh;
+}
+
 p {
 	margin-bottom: 0;
 }

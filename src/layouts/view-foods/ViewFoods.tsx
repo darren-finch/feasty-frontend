@@ -69,7 +69,7 @@ const ViewFoods: React.FC = () => {
 	}
 
 	return (
-		<Container>
+		<Container className="d-flex flex-column h-100 overflow-auto">
 			<Row className="my-4">
 				<Col className="d-flex align-items-center justify-content-start">
 					<h1>Foods</h1>
@@ -85,7 +85,7 @@ const ViewFoods: React.FC = () => {
 				onSearchQueryChange={handleSearchQueryChange}
 				onSearchClicked={handleSearchClicked}
 			/>
-			<div style={{ maxHeight: "75vh" }} className="mb-4 overflow-auto">
+			<div className="mb-4 overflow-auto">
 				<AccordionList
 					elementList={foodsList.map((food) => {
 						const macroNutrientsString = getMacroNutrientsString(
